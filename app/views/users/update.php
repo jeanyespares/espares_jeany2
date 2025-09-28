@@ -26,27 +26,32 @@
 
   <div class="bg-yellow-50 p-8 rounded-3xl shadow-2xl w-full max-w-md border-4 border-yellow-700">
 
-    <h2 class="font-title text-2xl text-center text-red-900 mb-6">
-    </i> Update Information
-    </h2>
+    <!-- Header -->
+    <div class="flex flex-col items-center mb-6">
+      <div class="bg-gradient-to-br from-green-700 to-yellow-600 rounded-full p-4 shadow-md">
+        <i class="fa-solid fa-wand-magic-sparkles text-yellow-100 text-3xl"></i>
+      </div>
+      <h2 class="font-title text-2xl text-red-900 mt-3">Update Information</h2>
+    </div>
 
-    <form action="<?=site_url('users/update/'.$user['id'])?>" method="POST" class="space-y-4">
+    <!-- Form -->
+    <form action="<?=site_url('users/update/'.$user['id'])?>" method="POST" class="space-y-5">
       <div>
         <label class="block text-red-900 mb-1 font-bold">First Name</label>
-        <input type="text" name="first_name" value="<?= html_escape($user['first_name'])?>" required
-               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
+        <input type="text" name="fname" value="<?= html_escape($user['fname'])?>" required
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-green-600 shadow-sm">
       </div>
 
       <div>
         <label class="block text-red-900 mb-1 font-bold">Last Name</label>
-        <input type="text" name="last_name" value="<?= html_escape($user['last_name'])?>" required
-               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
+        <input type="text" name="lname" value="<?= html_escape($user['lname'])?>" required
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-green-600 shadow-sm">
       </div>
 
       <div>
         <label class="block text-red-900 mb-1 font-bold">Email</label>
         <input type="email" name="email" value="<?= html_escape($user['email'])?>" required
-               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-green-600 shadow-sm">
       </div>
 
       <button type="submit"
