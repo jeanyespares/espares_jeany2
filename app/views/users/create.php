@@ -3,66 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Sign Up</title>
+  <title>Enroll Student</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=IM+Fell+English&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'IM Fell English', serif;
+      background-color: #fae5b3;
+    }
+    .font-title {
+      font-family: 'Cinzel Decorative', cursive;
+      letter-spacing: 2px;
+    }
+    .btn-hover:hover {
+      box-shadow: 0 0 12px gold, 0 0 24px crimson;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400 min-h-screen flex items-center justify-center font-sans">
+<body class="min-h-screen flex items-center justify-center">
 
-  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md animate-fadeIn border border-gray-200">
-    
+  <div class="bg-yellow-50 p-8 rounded-3xl shadow-2xl w-full max-w-md border-4 border-yellow-700">
+
     <!-- Header -->
     <div class="flex flex-col items-center mb-6">
-      <div class="bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full p-3 shadow-md">
-        <i class="fa-solid fa-user-graduate text-white text-3xl"></i>
+      <div class="bg-gradient-to-br from-red-700 to-yellow-600 rounded-full p-4 shadow-md">
+        <i class="fa-solid fa-hat-wizard text-yellow-100 text-3xl"></i>
       </div>
-      <h2 class="text-2xl font-bold text-gray-800 mt-3">Create Your Student Account</h2>
-      <p class="text-gray-500 text-sm">Join our student community today!</p>
+      <h2 class="font-title text-2xl text-red-900 mt-3">Add New Student</h2>
+      
     </div>
 
     <!-- Form -->
     <form action="<?=site_url('users/create')?>" method="POST" class="space-y-5">
-      
-      <!-- First Name -->
       <div>
-        <label class="block text-gray-700 mb-1 font-medium">First Name</label>
-        <input type="text" name="fname" placeholder="Enter your first name" required
-               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm transition duration-200">
+        <label class="block text-red-900 mb-1 font-bold">First Name</label>
+        <input type="text" name="fname" required placeholder="enter first name"
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
       </div>
 
-      <!-- Last Name -->
       <div>
-        <label class="block text-gray-700 mb-1 font-medium">Last Name</label>
-        <input type="text" name="lname" placeholder="Enter your last name" required
-               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm transition duration-200">
+        <label class="block text-red-900 mb-1 font-bold">Last Name</label>
+        <input type="text" name="lname" required placeholder="enter last name"
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
       </div>
 
-      <!-- Email -->
       <div>
-        <label class="block text-gray-700 mb-1 font-medium">Email Address</label>
-        <input type="email" name="email" placeholder="Enter your email" required
-               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm transition duration-200">
+        <label class="block text-red-900 mb-1 font-bold">Email</label>
+        <input type="email" name="email" required placeholder="enter your email"
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
       </div>
 
-      <!-- Sign Up Button -->
       <button type="submit"
-              class="w-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-semibold py-3 rounded-xl shadow-lg transition duration-300 transform hover:scale-105">
-        <i class="fa-solid fa-user-plus mr-2"></i> Sign In
+              class="btn-hover w-full bg-gradient-to-r from-red-700 to-yellow-600 text-yellow-100 font-bold py-3 rounded-xl shadow-lg transition">
+         Add
       </button>
-
-      
     </form>
   </div>
-
-  <!-- Animation -->
-  <style>
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fadeIn {
-      animation: fadeIn 0.8s ease;
-    }
-  </style>
 </body>
 </html>

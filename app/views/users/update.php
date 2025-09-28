@@ -3,53 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Update</title>
+  <title>Update Student</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=IM+Fell+English&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'IM Fell English', serif;
+      background-color: #fae5b3;
+    }
+    .font-title {
+      font-family: 'Cinzel Decorative', cursive;
+      letter-spacing: 2px;
+    }
+    .btn-hover:hover {
+      box-shadow: 0 0 12px gold, 0 0 24px crimson;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-600 to-cyan-400 min-h-screen flex items-center justify-center font-sans">
+<body class="min-h-screen flex items-center justify-center">
 
-  <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md animate-fadeIn">
-    <h2 class="text-2xl font-semibold text-center text-blue-600 mb-6">Update Now....</h2>
+  <div class="bg-yellow-50 p-8 rounded-3xl shadow-2xl w-full max-w-md border-4 border-yellow-700">
+
+    <h2 class="font-title text-2xl text-center text-red-900 mb-6">
+    </i> Update Information
+    </h2>
 
     <form action="<?=site_url('users/update/'.$user['id'])?>" method="POST" class="space-y-4">
-      <!-- First Name -->
       <div>
-        <label class="block text-gray-700 mb-1">First Name</label>
-        <input type="text" name="fname" value="<?= html_escape($user['fname'])?>" required
-               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <label class="block text-red-900 mb-1 font-bold">First Name</label>
+        <input type="text" name="first_name" value="<?= html_escape($user['first_name'])?>" required
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
       </div>
 
-      <!-- Last Name -->
       <div>
-        <label class="block text-gray-700 mb-1">Last Name</label>
-        <input type="text" name="lname" value="<?= html_escape($user['lname'])?>" required
-               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <label class="block text-red-900 mb-1 font-bold">Last Name</label>
+        <input type="text" name="last_name" value="<?= html_escape($user['last_name'])?>" required
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
       </div>
 
-      <!-- Email -->
       <div>
-        <label class="block text-gray-700 mb-1">Email Address</label>
+        <label class="block text-red-900 mb-1 font-bold">Email</label>
         <input type="email" name="email" value="<?= html_escape($user['email'])?>" required
-               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+               class="w-full px-4 py-3 border-2 border-yellow-700 rounded-xl focus:ring-2 focus:ring-red-600 shadow-sm">
       </div>
 
-      <!-- Button -->
       <button type="submit"
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl shadow-md transition duration-200">
-        Update
+              class="btn-hover w-full bg-gradient-to-r from-green-700 to-green-900 text-yellow-100 font-bold py-3 rounded-xl shadow-lg transition">
+         Update
       </button>
     </form>
   </div>
-
-  <!-- Small fade-in animation -->
-  <style>
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fadeIn {
-      animation: fadeIn 0.8s ease;
-    }
-  </style>
 </body>
 </html>
