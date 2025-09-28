@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Directory</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="<?=base_url();?>/public/style.css">
 
   <style>
     body { 
-      font-family: 'Baloo 2', cursive; 
+      font-family: 'Poppins', sans-serif; 
       background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe);
     }
-    .font-title { font-family: 'Pacifico', cursive; }
+    .font-title { 
+      font-family: 'Dancing Script', cursive; 
+    }
     .btn-hover:hover { 
       transform: scale(1.07) rotate(-1deg); 
       box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff; 
@@ -44,7 +46,7 @@
   <nav class="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 shadow-lg border-b-4 border-pink-300">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <h1 class="text-white font-title text-3xl flex items-center gap-2">
-        <i class="fa-solid fa-sparkles"></i> Registered BSIT Students💖
+        <i class="fa-solid fa-sparkles"></i> Registered BSIT Students 💖
       </h1>
     </div>
   </nav>
@@ -63,7 +65,7 @@
             name="q" 
             value="<?=html_escape($_GET['q'] ?? '')?>" 
             placeholder="🔍 Search student..." 
-            class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outlinegit -none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
+            class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
           <button type="submit" class="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-r-2xl shadow transition-all duration-300">
             <i class="fa fa-search"></i>
           </button>

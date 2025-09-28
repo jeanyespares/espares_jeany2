@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enroll Student</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Fredoka+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
-      font-family: 'Baloo 2', cursive;
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe);
     }
     .font-title {
-      font-family: 'Pacifico', cursive;
+      font-family: 'Fredoka One', cursive;
     }
     .btn-hover:hover {
       transform: scale(1.07) rotate(-1deg);
@@ -31,7 +31,7 @@
         <i class="fa-solid fa-hat-wizard text-white text-4xl"></i>
       </div>
       <h2 class="font-title text-3xl text-pink-600 mt-3 drop-shadow-lg">Add New Student 💖</h2>
-      <p class="text-sm text-fuchsia-600 mt-1">Let's welcome a magical new student ✨</p>
+      <p class="text-sm text-fuchsia-600 mt-1">A new adventure begins with our latest student! 🌈 </p>
     </div>
 
     <!-- Form -->
