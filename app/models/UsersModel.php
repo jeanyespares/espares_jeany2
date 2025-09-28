@@ -27,14 +27,13 @@ class Usersmodel extends Model {
             $query = $this->db->table($this->table);
 
             // 🔍 search across id, fname, lname, email
-            if (!empty($q)) {
-                $query->group_start()
-                      ->like('id', $q)
-                      ->or_like('fname', $q)
-                      ->or_like('lname', $q)
-                      ->or_like('email', $q)
-                      ->group_end();
-            }
+            $query->groupStart()
+      ->like('id', $q)
+      ->orLike('fname', $q)
+      ->orLike('lname', $q)
+      ->orLike('email', $q)
+      ->groupEnd();
+
 
             // total count
             $countQuery = clone $query;
