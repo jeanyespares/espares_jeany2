@@ -82,8 +82,8 @@
           <thead>
             <tr class="text-white uppercase tracking-wider text-lg">
               <th class="py-3 px-4">ID</th>
-              <th class="py-3 px-4">Lastname</th>
               <th class="py-3 px-4">Firstname</th>
+              <th class="py-3 px-4">Lastname</th>
               <th class="py-3 px-4">Email</th>
               <th class="py-3 px-4">Action</th>
             </tr>
