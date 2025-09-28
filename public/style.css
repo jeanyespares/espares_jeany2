@@ -1,0 +1,45 @@
+/* Pagination Container */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* space between buttons */
+  margin-top: 20px;
+  font-family: 'Baloo 2', cursive;
+}
+
+/* Pagination Links */
+.pagination a,
+.pagination span {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 9999px; /* pill shape */
+  border: 2px solid #f9a8d4;
+  background: white;
+  color: #db2777;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover */
+.pagination a:hover {
+  background: linear-gradient(135deg, #f9a8d4, #f0abfc);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 0 12px #f9a8d4;
+}
+
+/* Active Page */
+.pagination .active {
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+  color: white;
+  border-color: #ec4899;
+  box-shadow: 0 0 10px #f472b6;
+}
+
+/* Disabled (for prev/next) */
+.pagination .disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
