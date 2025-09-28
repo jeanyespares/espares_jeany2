@@ -31,7 +31,7 @@
         <i class="fa-solid fa-wand-magic-sparkles text-white text-4xl"></i>
       </div>
       <h2 class="font-title text-3xl text-pink-600 mt-3 drop-shadow-lg">Update Information ✨</h2>
-      <p class="text-sm text-fuchsia-600 mt-1">Give your student profile a glow-up 🌸</p>
+      <p class="text-sm text-fuchsia-600 mt-1">Your Gateway to Student Success 🌸</p>
     </div>
 
     <!-- Form -->
