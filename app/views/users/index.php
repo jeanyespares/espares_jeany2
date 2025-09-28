@@ -58,17 +58,16 @@
 
         <!-- Search Bar -->
         <form method="get" action="<?=site_url()?>" class="flex">
-  <input 
-    type="text" 
-    name="q" 
-    value="<?=html_escape($_GET['q'] ?? '')?>" 
-    placeholder="🔍 Search student..." 
-    class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
-  <button type="submit" class="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-r-2xl shadow transition-all duration-300">
-    <i class="fa fa-search"></i>
-  </button>
-</form>
-
+          <input 
+            type="text" 
+            name="q" 
+            value="<?=html_escape($_GET['q'] ?? '')?>" 
+            placeholder="🔍 Search student..." 
+            class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outlinegit -none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
+          <button type="submit" class="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-r-2xl shadow transition-all duration-300">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
 
         <!-- Add Button -->
         <a href="<?=site_url('users/create')?>"
