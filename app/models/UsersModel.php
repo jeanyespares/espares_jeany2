@@ -6,7 +6,6 @@ class Usersmodel extends Model {
     protected $primary_key = 'id';
     protected $allowed_fields = ['fname', 'lname', 'email'];
     protected $validation_rules = [
-        
         'lname' => 'required|min_length[2]|max_length[100]',
         'fname' => 'required|min_length[2]|max_length[100]',
         'email' => 'required|valid_email|max_length[150]'
@@ -20,7 +19,6 @@ class Usersmodel extends Model {
     public function page($q = '', $records_per_page = null, $page = null)
     {
         if (is_null($page)) {
-            // return all without pagination
             return [
                 'total_rows' => $this->db->table($this->table)->count_all(),
                 'records'    => $this->db->table($this->table)->get_all()
@@ -29,10 +27,10 @@ class Usersmodel extends Model {
             $query = $this->db->table($this->table);
 
             if (!empty($q)) {
-                $query
-                      ->or_like('fname', '%'.$q.'%')
-                      ->like('lname', '%'.$q.'%')
-                      ->or_like('email', '%'.$q.'%');
+                $query->where("id LIKE '%{$q}%' 
+                            OR fname LIKE '%{$q}%' 
+                            OR lname LIKE '%{$q}%' 
+                            OR email LIKE '%{$q}%'");
             }
 
             // count total rows
