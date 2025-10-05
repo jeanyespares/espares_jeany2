@@ -3,10 +3,16 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 class UsersModel extends Model {
 
+    // ⭐️ FIX: Changed to protected to fix E_COMPILE_ERROR.
     protected $table = 'students'; 
 
     // --- Utility Methods ---
 
+    /**
+     * Counts all users/students based on search query.
+     * @param string $q Search query.
+     * @return int
+     */
     private function count_students($q = '')
     {
         $this->db->table($this->table);
@@ -17,14 +23,16 @@ class UsersModel extends Model {
                     ->or_like('email', $q)
                     ->group_end();
         }
-        return $this->db->get_num_rows();
+        // ⭐️ FIX: Changed get_num_rows() to num_rows() 
+        return $this->db->num_rows(); 
     }
 
-    // --- CRUD Methods ---
+    // --- CRUD Methods (No Change) ---
 
     public function count_all_users()
     {
-        return $this->db->table($this->table)->get_num_rows();
+        $this->db->table($this->table);
+        return $this->db->num_rows(); 
     }
 
     public function register_user($data)
@@ -78,6 +86,13 @@ class UsersModel extends Model {
 
     // --- Pagination Fix Method ---
 
+    /**
+     * Retrieves all students with search and MANUAL pagination support.
+     * @param string $q Search query.
+     * @param int $records_per_page
+     * @param int $page Current page number.
+     * @return array Contains 'records' and 'pagination_html'.
+     */
     public function get_all_students($q = '', $records_per_page = 5, $page = 1)
     {
         try {
@@ -133,8 +148,8 @@ class UsersModel extends Model {
             ];
 
         } catch (Exception $e) {
-             log_message('error', 'Database Error in get_all_students: ' . $e->getMessage());
-             return [
+            log_message('error', 'Database Error in get_all_students: ' . $e->getMessage());
+            return [
                 'records' => [],
                 'pagination' => ''
             ];
