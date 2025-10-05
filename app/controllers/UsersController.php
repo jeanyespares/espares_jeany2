@@ -1,6 +1,6 @@
 <?php
 // Note: This controller assumes that the 'Controller' base class,
-// the necessary Model ('Users_model'), and helper functions (like redirect, post, is_post_request, etc.) are available.
+// the necessary Model ('UsersModel'), and helper functions (like redirect, post, is_post_request, etc.) are available.
 
 class UsersController extends Controller
 {
@@ -9,8 +9,9 @@ class UsersController extends Controller
         // ⭐ THE FIX: Call the parent constructor first to initialize framework dependencies like $this->call
         parent::__construct(); 
 
-        // Load the Users_model to interact with the database
-        $this->call->model('Users_model');
+        // Load the UsersModel to interact with the database. 
+        // Changed 'Users_model' to 'UsersModel' to match the class name in the model file.
+        $this->call->model('UsersModel');
 
         // Load necessary helpers 
         $this->call->helper('url');
@@ -24,27 +25,34 @@ class UsersController extends Controller
      */
     private function is_admin()
     {
+        // Checks if the user session exists AND if the user role is set to 'admin'
         return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
     }
 
     /**
      * Displays the student directory list (Index page).
+     * Passes role information to the view for conditional element display (hiding/showing Action column/Add button).
      */
     public function index()
     {
         $data = [];
+        
+        // Pass login status and role to the view (users/index)
         $data['is_admin'] = $this->is_admin();
         $data['is_logged_in'] = isset($_SESSION['user']);
 
+        // --- Pagination and Search Logic ---
         $page = (int)($_GET['page'] ?? 1);
         $per_page = 10;
         $search_query = html_escape($_GET['q'] ?? '');
 
-        $result = $this->Users_model->get_all_users($page, $per_page, $search_query);
+        // Fetch students and pagination links (Using $this->UsersModel now)
+        $result = $this->UsersModel->get_all_users($page, $per_page, $search_query);
 
         $data['users'] = $result['users'];
         $data['page'] = $result['pagination'];
 
+        // Render the view
         $this->call->view('users/index', $data);
     }
 
@@ -54,10 +62,12 @@ class UsersController extends Controller
     public function login()
     {
         if (isset($_SESSION['user'])) {
+            // Already logged in, redirect to the main list
             redirect('users/index');
         }
 
-        $data = ['error' => ''];
+        $data = [];
+        $data['error'] = '';
 
         if (is_post_request()) {
             $username = post('username');
@@ -66,13 +76,15 @@ class UsersController extends Controller
             if (empty($username) || empty($password)) {
                 $data['error'] = 'Username and password are required.';
             } else {
-                $user = $this->Users_model->get_user_by_username($username);
+                // Attempt login via model (Using $this->UsersModel now)
+                $user = $this->UsersModel->get_user_by_username($username);
 
                 if ($user && password_verify($password, $user['password'])) {
+                    // Successful login: Set session data
                     $_SESSION['user'] = [
                         'id' => $user['id'],
                         'username' => $user['username'],
-                        'role' => $user['role']
+                        'role' => $user['role'] 
                     ];
                     redirect('users/index');
                 } else {
@@ -81,27 +93,37 @@ class UsersController extends Controller
             }
         }
 
+        // Render the login form
         $this->call->view('users/login', $data);
     }
 
     /**
      * Handles user registration.
+     * IMPORTANT: Only the first user registered is allowed (and is automatically set as 'admin').
+     * All subsequent attempts are redirected to the login page.
      */
     public function register()
     {
-        if ($this->Users_model->count_all_users() > 0) {
+        // ⭐ BLOCK REGISTRATION: Check if any user already exists. (Using $this->UsersModel now)
+        if ($this->UsersModel->count_all_users() > 0) {
+            // If the admin user exists, immediately redirect to login.
             redirect('users/login');
         }
 
-        $data = ['error' => ''];
+        $data = [];
+        $data['error'] = '';
 
         if (is_post_request()) {
             $username = post('username');
             $password = post('password');
-            $role = 'admin';
+            $role = 'admin'; // Automatically assign 'admin' role to the first user
 
-            if ($this->Users_model->register_user($username, $password, $role)) {
-                $user = $this->Users_model->get_user_by_username($username);
+            // Note: In a real app, you would add more validation here
+
+            // Register the user (Using $this->UsersModel now)
+            if ($this->UsersModel->register_user($username, $password, $role)) {
+                // Registration successful, manually log them in
+                $user = $this->UsersModel->get_user_by_username($username);
                 $_SESSION['user'] = [
                     'id' => $user['id'],
                     'username' => $user['username'],
@@ -113,26 +135,33 @@ class UsersController extends Controller
             }
         }
 
+        // Render the registration form (only if no users exist yet)
         $this->call->view('users/register', $data);
     }
+
+    // --- Student Management Functions (Admin Only) ---
 
     /**
      * Displays the form to add a new student. (Admin Only)
      */
     public function create()
     {
+        // ⭐ SECURITY CHECK: Only allow admin to access
         if (!$this->is_admin()) {
             redirect('users/index');
         }
 
-        $data = ['error' => ''];
+        $data = [];
+        $data['error'] = '';
 
         if (is_post_request()) {
             $fname = post('fname');
             $lname = post('lname');
             $email = post('email');
 
-            if ($this->Users_model->add_student(['fname' => $fname, 'lname' => $lname, 'email' => $email])) {
+            // Add student using the model (Using $this->UsersModel now)
+            if ($this->UsersModel->add_student(['fname' => $fname, 'lname' => $lname, 'email' => $email])) {
+                // Success
                 redirect('users/index');
             } else {
                 $data['error'] = 'Failed to add student. Please check input.';
@@ -147,12 +176,14 @@ class UsersController extends Controller
      */
     public function update($id)
     {
+        // ⭐ SECURITY CHECK: Only allow admin to access
         if (!$this->is_admin()) {
             redirect('users/index');
         }
 
         $id = (int)$id;
-        $data['user'] = $this->Users_model->get_student_by_id($id);
+        // Get the specific student data (Using $this->UsersModel now)
+        $data['user'] = $this->UsersModel->get_student_by_id($id);
 
         if (!$data['user']) {
             redirect('users/index');
@@ -165,7 +196,9 @@ class UsersController extends Controller
             $lname = post('lname');
             $email = post('email');
 
-            if ($this->Users_model->update_student($id, ['fname' => $fname, 'lname' => $lname, 'email' => $email])) {
+            // Update student using the model (Using $this->UsersModel now)
+            if ($this->UsersModel->update_student($id, ['fname' => $fname, 'lname' => $lname, 'email' => $email])) {
+                // Success
                 redirect('users/index');
             } else {
                 $data['error'] = 'Failed to update student.';
@@ -180,12 +213,16 @@ class UsersController extends Controller
      */
     public function delete($id)
     {
+        // ⭐ SECURITY CHECK: Only allow admin to access
         if (!$this->is_admin()) {
             redirect('users/index');
         }
 
         $id = (int)$id;
-        $this->Users_model->delete_student($id);
+
+        // Delete student using the model (Using $this->UsersModel now)
+        $this->UsersModel->delete_student($id);
+
         redirect('users/index');
     }
 
@@ -194,7 +231,7 @@ class UsersController extends Controller
      */
     public function logout()
     {
-        session_destroy();
+        session_destroy(); // Destroy the entire session
         redirect('users/index');
     }
 }
