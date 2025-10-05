@@ -38,7 +38,7 @@ class UsersController extends Controller {
 
     // INDEX (protected)
     public function index() {
-        if (!isset($_SESSION['user'])) {
+        if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'jeany') {
             redirect(site_url('users/login'));
         }
 
@@ -53,16 +53,15 @@ class UsersController extends Controller {
         }
 
         $records_per_page = 5;
-
         $all = $this->UsersModel->page($q, $records_per_page, $page);
         $data['users'] = $all['records'];
         $total_rows = $all['total_rows'];
 
         $this->pagination->set_options([
-            'first_link'     => '⏮ First',
-            'last_link'      => 'Last ⏭',
-            'next_link'      => 'Next →',
-            'prev_link'      => '← Prev',
+            'first_link' => '⏮ First',
+            'last_link'  => 'Last ⏭',
+            'next_link'  => 'Next →',
+            'prev_link'  => '← Prev',
             'page_delimiter' => '&page='
         ]);
 
@@ -74,7 +73,9 @@ class UsersController extends Controller {
     }
 
     public function create() {
-        if (!isset($_SESSION['user'])) redirect(site_url('users/login'));
+        if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'jeany') {
+            redirect(site_url('users/login'));
+        }
 
         if ($this->io->method() == 'post') {
             $data = [
@@ -94,7 +95,9 @@ class UsersController extends Controller {
     }
 
     public function update($id) {
-        if (!isset($_SESSION['user'])) redirect(site_url('users/login'));
+        if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'jeany') {
+            redirect(site_url('users/login'));
+        }
 
         $user = $this->UsersModel->find($id);
         if (!$user) { echo "User not found."; return; }
@@ -115,7 +118,9 @@ class UsersController extends Controller {
     }
 
     public function delete($id) {
-        if (!isset($_SESSION['user'])) redirect(site_url('users/login'));
+        if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'jeany') {
+            redirect(site_url('users/login'));
+        }
 
         if ($this->UsersModel->delete($id)) redirect(site_url());
         else echo "Error deleting user.";
