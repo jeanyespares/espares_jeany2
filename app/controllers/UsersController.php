@@ -1,12 +1,8 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-// Fix for is_post_request() error in some environments
+// FALLBACK: Defines is_post_request() if the framework helper doesn't load it
 if (!function_exists('is_post_request')) {
-    /**
-     * Checks if the current request method is POST.
-     * @return bool
-     */
     function is_post_request() {
         return $_SERVER['REQUEST_METHOD'] === 'POST';
     }
@@ -14,74 +10,201 @@ if (!function_exists('is_post_request')) {
 
 class UsersController extends Controller
 {
+    /**
+     * UsersController constructor.
+     * Loads necessary models and helpers.
+     */
     public function __construct()
     {
+        // ⭐️ FIX: Must call parent constructor first to initialize $this->call, $this->io, etc.
         parent::__construct(); 
+        
+        // Load the UsersModel to interact with the database
+        // ⭐️ FIX: Use the correct PascalCase model name (UsersModel)
         $this->call->model('UsersModel');
+        
+        // Load necessary helpers
         $this->call->helper('url');
         $this->call->helper('session');
         $this->call->helper('input');
-        $this->call->helper('form'); 
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->call->helper('form'); // Loaded for robustness
     }
 
-    /* ===========================
-        🔐 AUTHENTICATION SECTION
-    =========================== */
-
-    public function register()
+    /**
+     * Checks if the currently logged-in user is an admin.
+     * @return bool
+     */
+    private function is_admin()
     {
-        if ($this->UsersModel->count_all_users() > 0) {
-            echo "<h1 style='text-align:center; color: #d946ef; margin-top: 50px;'>Registration is currently closed. Only one administrative account is allowed.</h1>";
-            echo "<p style='text-align:center;'><a href='" . site_url('users/login') . "'>Login here</a> or <a href='" . site_url('/') . "'>Go to Directory</a></p>";
-            return;
+        return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
+    }
+
+    /**
+     * Main student directory view with search and pagination.
+     */
+    public function index()
+    {
+        // Pass login status and admin status to the view
+        $is_admin = $this->is_admin();
+        $is_logged_in = isset($_SESSION['user']);
+        
+        $data['is_admin'] = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+
+        // ⭐️ FIX: Safely retrieve 'q' and 'page' using isset to prevent "Undefined array key" warnings
+        $q = isset($_GET['q']) ? $this->io->get('q') : '';
+        $page = isset($_GET['page']) ? $this->io->get('page') : 1; 
+
+        $records_per_page = 5;
+
+        $results = $this->UsersModel->get_all_students($q, $records_per_page, $page);
+
+        $data['users'] = $results['records'];
+        $data['pagination'] = $results['pagination'];
+        $data['q'] = $q;
+
+        // View file will use $data['is_admin'] to conditionally show the action column/buttons
+        $this->call->view('users/index', $data);
+    }
+
+    /**
+     * Displays form to create a new student or handles submission. (Admin only)
+     */
+    public function create()
+    {
+        if (!$this->is_admin()) {
+            redirect(site_url('users/index'));
         }
 
-        $data = ['error' => ''];
+        if (is_post_request()) {
+            $data = [
+                'fname' => $this->io->post('fname'),
+                'lname' => $this->io->post('lname'),
+                'email' => $this->io->post('email'),
+            ];
+
+            if ($this->UsersModel->add_student($data)) {
+                $this->session->set_flashdata('success', 'Student added successfully.');
+                redirect(site_url('users/index'));
+            } else {
+                $this->session->set_flashdata('error', 'Failed to add student.');
+            }
+        }
+        $this->call->view('users/create');
+    }
+
+    /**
+     * Displays form to update a student or handles submission. (Admin only)
+     * @param int $id The student ID.
+     */
+    public function update($id = null)
+    {
+        if (!$this->is_admin()) {
+            redirect(site_url('users/index'));
+        }
 
         if (is_post_request()) {
+            $data = [
+                'fname' => $this->io->post('fname'),
+                'lname' => $this->io->post('lname'),
+                'email' => $this->io->post('email'),
+            ];
+
+            if ($this->UsersModel->update_student($this->io->post('id'), $data)) {
+                $this->session->set_flashdata('success', 'Student updated successfully.');
+                redirect(site_url('users/index'));
+            } else {
+                $this->session->set_flashdata('error', 'Failed to update student.');
+            }
+        }
+
+        $data['user'] = $this->UsersModel->get_student_by_id($id);
+        if (!$data['user']) {
+            redirect(site_url('users/index'));
+        }
+        
+        $this->call->view('users/update', $data);
+    }
+
+    /**
+     * Handles deletion of a student. (Admin only)
+     * @param int $id The student ID.
+     */
+    public function delete($id = null)
+    {
+        if (!$this->is_admin()) {
+            redirect(site_url('users/index'));
+        }
+
+        if ($this->UsersModel->delete_student($id)) {
+            $this->session->set_flashdata('success', 'Student deleted successfully.');
+        } else {
+            $this->session->set_flashdata('error', 'Failed to delete student.');
+        }
+        redirect(site_url('users/index'));
+    }
+
+    /**
+     * Registration handler. 
+     * ⭐️ BLOCKER: Only allows registration if no users exist (for the first Admin: Jeany).
+     */
+    public function register()
+    {
+        $total_users = $this->UsersModel->count_all_users();
+        
+        // Block registration if an admin already exists (total users > 0)
+        if ($total_users > 0) {
+            $data['error'] = 'Registration is currently closed. Only one admin user is allowed.';
+            $this->session->set_flashdata('error', $data['error']);
+            redirect(site_url('users/login'));
+        }
+
+        $data = [];
+        if (is_post_request()) {
+            // ⭐️ FIX: Use $this->io->post() instead of post() function
             $username = trim($this->io->post('username')); 
             $password = $this->io->post('password');
-            $fname = trim($this->io->post('fname'));
-            $lname = trim($this->io->post('lname'));
-            $email = trim($this->io->post('email'));
-            $role = 'admin'; 
 
-            if (empty($username) || empty($password) || empty($fname) || empty($lname) || empty($email)) {
-                $data['error'] = "All fields are required.";
+            if (empty($username) || empty($password)) {
+                $data['error'] = 'Username and password are required.';
+            } elseif ($this->UsersModel->get_user_by_username($username)) {
+                $data['error'] = 'Username already exists.';
             } else {
-                $user_data = [
-                    'fname' => $fname,
-                    'lname' => $lname,
-                    'email' => $email,
+                // First user is automatically set as 'admin'
+                $role = 'admin'; 
+                
+                // You may want to prompt for fname, lname, email here if needed for the admin's student profile
+                $admin_data = [
                     'username' => $username,
-                    'password' => $password,
-                    'role' => $role
+                    'password' => $password, // Model will hash this
+                    'role' => $role,
+                    // Note: You must ensure your register form collects fname, lname, and email 
+                    // or set default values for 'students' table fields if they are required.
+                    'fname' => 'Jeany', // Assuming 'jeany' is the admin's name
+                    'lname' => 'Admin',
+                    'email' => 'jeany.admin@example.com' 
                 ];
 
-                if ($this->UsersModel->register_user($user_data)) {
-                    redirect(site_url('/'));
+                if ($this->UsersModel->register_user($admin_data)) {
+                    $this->session->set_flashdata('success', 'Admin registered successfully. Please log in.');
+                    redirect(site_url('users/login'));
                 } else {
-                    $data['error'] = "Error in registration. Username or email might already be taken.";
+                    $data['error'] = 'Registration failed due to a server error.';
                 }
             }
-        } 
-        
+        }
         $this->call->view('users/register', $data);
     }
 
+    /**
+     * Login handler.
+     */
     public function login()
     {
-        if (isset($_SESSION['user'])) {
-            redirect(site_url('/')); 
-        }
-
-        $data = ['error' => ''];
-
+        $data = [];
+        $data['error'] = '';
         if (is_post_request()) {
+            // ⭐️ FIX: Use $this->io->post() instead of post() function
             $username = trim($this->io->post('username')); 
             $password = $this->io->post('password');
 
@@ -91,130 +214,29 @@ class UsersController extends Controller
                 $user = $this->UsersModel->get_user_by_username($username);
 
                 if ($user && password_verify($password, $user['password'])) {
+                    // SUCCESS: Set session variables, including the essential 'role'
                     $_SESSION['user'] = [
                         'id' => $user['id'],
                         'username' => $user['username'],
-                        'role' => $user['role']
+                        'role' => $user['role'], 
                     ];
-                    redirect(site_url('/')); 
+                    // Redirect straight to the directory table
+                    redirect(site_url('users/index'));
                 } else {
-                    $data['error'] = "Invalid username or password.";
+                    $data['error'] = 'Invalid username or password.';
                 }
             }
         }
-        
         $this->call->view('users/login', $data);
     }
 
+    /**
+     * Logout handler.
+     */
     public function logout()
     {
-        session_destroy();
-        redirect(site_url('/')); 
-    }
-
-    /* ===========================
-        📋 CRUD SECTION
-    =========================== */
-
-    public function index()
-    {
-        $is_admin = isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
-        $is_logged_in = isset($_SESSION['user']);
-        $data['is_admin'] = $is_admin;
-        $data['is_logged_in'] = $is_logged_in;
-
-        $page = isset($_GET['page']) ? $this->io->get('page') : 1;
-        $q = isset($_GET['q']) ? trim($this->io->get('q')) : '';
-
-        $records_per_page = 5;
-        $all = $this->UsersModel->get_all_students($q, $records_per_page, $page);
-        $data['users'] = $all['records'];
-        $total_rows = $all['total_rows'];
-
-        $this->pagination->set_options([
-            'first_link' => '⏮ First',
-            'last_link' => 'Last ⏭',
-            'next_link' => 'Next →',
-            'prev_link' => '← Prev',
-            'page_delimiter' => '&page='
-        ]);
-
-        $this->pagination->set_theme('default');
-        $this->pagination->initialize($total_rows, $records_per_page, $page, site_url() . '?q=' . urlencode($q));
-        $data['page'] = $this->pagination->paginate();
-
-        $this->call->view('users/index', $data);
-    }
-
-    function create()
-    {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-            redirect(site_url('users/login'));
-            return;
-        }
-
-        if ($this->io->method() == 'post') {
-            $data = [
-                'fname' => $this->io->post('fname'),
-                'lname' => $this->io->post('lname'),
-                'email' => $this->io->post('email'),
-                'username' => uniqid('std_'),
-                'password' => password_hash(uniqid(), PASSWORD_DEFAULT),
-                'role' => 'student'
-            ];
-
-            if ($this->UsersModel->add_student($data)) {
-                redirect(site_url());
-            } else {
-                echo "Error in creating user.";
-            }
-        } else {
-            $this->call->view('users/create');
-        }
-    }
-
-    function update($id)
-    {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-            redirect(site_url('users/login'));
-            return;
-        }
-
-        $user = $this->UsersModel->get_student_by_id($id);
-        if (!$user) {
-            echo "Student not found.";
-            return;
-        }
-
-        if ($this->io->method() == 'post') {
-            $data = [
-                'fname' => $this->io->post('fname'),
-                'lname' => $this->io->post('lname'),
-                'email' => $this->io->post('email')
-            ];
-
-            if ($this->UsersModel->update_student($id, $data)) {
-                redirect(site_url());
-            } else {
-                echo "Error in updating information.";
-            }
-        } else {
-            $data['user'] = $user;
-            $this->call->view('users/update', $data);
-        }
-    }
-
-    function delete($id)
-    {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-            redirect(site_url('users/login'));
-            return;
-        }
-
-        if ($this->UsersModel->delete_student($id)) {
-            redirect(site_url());
-        } else {
-            echo "Error in deleting user.";
-        }
+        unset($_SESSION['user']);
+        $this->session->set_flashdata('success', 'You have been logged out.');
+        redirect(site_url('users/login'));
     }
 }
