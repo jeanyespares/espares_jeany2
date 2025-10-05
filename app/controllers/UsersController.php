@@ -1,3 +1,4 @@
+
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
@@ -6,28 +7,34 @@ class UsersController extends Controller {
     {
         parent::__construct();
         $this->call->model('UsersModel');
+        // load auth library to check permissions
+        $this->call->library('Auth');
     }
 
     public function index()
     {
+        // make current user available to views
+        $data['current_user'] = $this->Auth->current_user();
+
         // Current page
         $page = 1;
         if (isset($_GET['page']) && !empty($_GET['page'])) {
             $page = $this->io->get('page');
         }
 
-        // Search query
-        $q = '';
-        if (isset($_GET['q']) && !empty($_GET['q'])) {
-            $q = trim($this->io->get('q'));
-        }
+    // Search query
+    $q = '';
+    if (isset($_GET['q']) && !empty($_GET['q'])) {
+    $q = trim($this->io->get('q'));
+    }
 
-        $records_per_page = 5;
+    $records_per_page = 5;
 
-        
-        $all = $this->UsersModel->page($q, $records_per_page, $page);
-        $data['users'] = $all['records'];
-        $total_rows = $all['total_rows'];
+    // Fetch paginated results
+    $all = $this->UsersModel->page($q, $records_per_page, $page);
+    $data['users'] = $all['records'];
+    $total_rows = $all['total_rows'];
+
 
         // Pagination 
         
@@ -53,6 +60,10 @@ class UsersController extends Controller {
     }
 
     function create(){
+        // only admin can create
+        $this->Auth->require_login();
+        $this->Auth->require_role('admin');
+
         if($this->io->method() == 'post'){
             $data = [
                 'fname' => $this->io->post('fname'),
@@ -72,6 +83,9 @@ class UsersController extends Controller {
     }
 
     function update($id){
+        // only admin can update
+        $this->Auth->require_login();
+        $this->Auth->require_role('admin');
         $user = $this->UsersModel->find($id);
         if(!$user){
             echo "User not found.";
@@ -97,6 +111,9 @@ class UsersController extends Controller {
     }
     
     function delete($id){
+        // only admin can delete
+        $this->Auth->require_login();
+        $this->Auth->require_role('admin');
         if($this->UsersModel->delete($id)){
             redirect(site_url());
         }else{
