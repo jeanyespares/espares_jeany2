@@ -1,169 +1,176 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-class UsersModel extends Model {
-
-    protected $table = 'students'; 
-
-    // --- Utility Methods for Counting ---
+class UsersModel extends Model
+{
+    /**
+     * UsersModel constructor.
+     * Automatically runs initialization logic upon creation.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->initialize_data(); // Calls the function to check and insert initial data
+    }
 
     /**
-     * Counts all students based on search query.
-     * @param string $q Search query.
-     * @return int
+     * Initializes the database with an Admin user and sample students
+     * if the tables are empty.
      */
-    private function count_students($q = '')
+    private function initialize_data()
     {
-        $this->db->table($this->table);
-        if (!empty($q)) {
-            $this->db->group_start()
-                    ->or_like('fname', $q)
-                    ->or_like('lname', $q)
-                    ->or_like('email', $q)
-                    ->group_end();
+        // 1. Check and create the Admin user (if no users exist)
+        if ($this->count_all_users() === 0) {
+            $admin_data = [
+                'username' => 'admin_jeany',
+                'password' => 'admin123', // This will be hashed in register_user
+                'role' => 'admin',
+                'fname' => 'Jeany', 
+                'lname' => 'Admin',
+                'email' => 'jeany.admin@example.com' 
+            ];
+            $this->register_user($admin_data);
+            error_log("Initial Admin created: admin_jeany / admin123");
         }
+
+        // 2. Check and create sample student records
+        if ($this->db->table('students')->get()->num_rows() === 0) {
+            $sample_students = [
+                ['fname' => 'Maria', 'lname' => 'Dela Cruz', 'email' => 'maria.dela.cruz@school.ph'],
+                ['fname' => 'Juan', 'lname' => 'Luna', 'email' => 'juan.luna@school.ph'],
+                ['fname' => 'Jose', 'lname' => 'Rizal', 'email' => 'jose.rizal@school.ph'],
+            ];
+
+            foreach ($sample_students as $student) {
+                $this->db->table('students')->insert($student);
+            }
+            error_log("Sample students created.");
+        }
+    }
+
+    // ========================================================
+    // STUDENT CRUD OPERATIONS
+    // ========================================================
+
+    public function get_all_students($q = '', $limit = 5, $page = 1)
+    {
+        $offset = ($page - 1) * $limit;
+        $total_records = 0;
         
-        // ⭐️ FINAL FIX: Execute the query and count the resulting array manually.
-        $results = $this->db->get_all(); 
-        return count($results); 
-    }
+        $this->db->table('students');
 
-    public function count_all_users()
-    {
-        $this->db->table($this->table);
-        // ⭐️ FINAL FIX: Execute the query and count the resulting array manually.
-        $results = $this->db->get_all(); 
-        return count($results); 
-    }
+        if (!empty($q)) {
+            $search_q = '%' . $q . '%';
+            $this->db->or_like('fname', $search_q);
+            $this->db->or_like('lname', $search_q);
+            $this->db->or_like('email', $search_q);
+            
+            // Count only search results
+            $total_records = $this->db->get()->num_rows();
+            
+            // Re-initialize query for data fetch
+            $this->db->table('students');
+            $this->db->or_like('fname', $search_q);
+            $this->db->or_like('lname', $search_q);
+            $this->db->or_like('email', $search_q);
+        } else {
+            // Count all records if no search query
+            $total_records = $this->db->get()->num_rows();
+            
+            // Re-initialize query for data fetch
+            $this->db->table('students');
+        }
 
-    // --- CRUD and Login/Register Methods ---
+        // Fetch the records for the current page
+        $records = $this->db->limit($limit, $offset)->order_by('id', 'desc')->get()->result_array();
 
-    public function register_user($data)
-    {
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        return $this->db->table($this->table)
-                        ->insert($data)
-                        ->exec();
-    }
+        $total_pages = ceil($total_records / $limit);
+        $pagination = $this->generate_pagination($total_pages, $page, $q);
 
-    public function get_user_by_username($username)
-    {
-        return $this->db->table($this->table)
-                        ->where('username', $username)
-                        ->get();
+        return [
+            'records' => $records,
+            'pagination' => $pagination
+        ];
     }
 
     public function get_student_by_id($id)
     {
-        return $this->db->table($this->table)
-                        ->where('id', $id)
-                        ->get();
+        return $this->db->table('students')->where('id', $id)->get()->row_array();
     }
 
     public function add_student($data)
     {
-        $data['role'] = 'student'; 
-        if (!isset($data['username'])) $data['username'] = strtolower($data['fname'] . rand(10, 99));
-        if (!isset($data['password'])) $data['password'] = password_hash('default123', PASSWORD_DEFAULT); 
-
-        return $this->db->table($this->table)
-                        ->insert($data)
-                        ->exec();
+        return $this->db->table('students')->insert($data);
     }
 
     public function update_student($id, $data)
     {
-        return $this->db->table($this->table)
-                        ->where('id', $id)
-                        ->update($data)
-                        ->exec();
+        return $this->db->table('students')->where('id', $id)->update($data);
     }
 
     public function delete_student($id)
     {
-        return $this->db->table($this->table)
-                        ->where('id', $id)
-                        ->delete()
-                        ->exec();
+        return $this->db->table('students')->where('id', $id)->delete();
     }
 
-    // --- Pagination Method with Fixes ---
-
-    /**
-     * Retrieves all students with search and MANUAL pagination support.
-     * @param string $q Search query.
-     * @param int $records_per_page
-     * @param int $page Current page number.
-     * @return array Contains 'records' and 'pagination_html'.
-     */
-    public function get_all_students($q = '', $records_per_page = 5, $page = 1)
+    // ========================================================
+    // USER AUTHENTICATION
+    // ========================================================
+    
+    public function count_all_users()
     {
-        try {
-            // 1. Count Total Records (uses the reliable count_students function)
-            $total_records = $this->count_students($q);
-            $total_pages = ceil($total_records / $records_per_page);
-            $offset = ($page - 1) * $records_per_page;
-            
-            // 2. Build the query for the current page records
-            $this->db->table($this->table);
-            
-            if (!empty($q)) {
-                $this->db->group_start()
-                        ->or_like('fname', $q)
-                        ->or_like('lname', $q)
-                        ->or_like('email', $q)
-                        ->group_end();
-            }
+        return $this->db->table('users')->get()->num_rows();
+    }
 
-            // Manual LIMIT and OFFSET
-            $this->db->order_by('id', 'DESC');
-            $this->db->limit($records_per_page, $offset);
-            $records = $this->db->get_all();
-            
-            // 3. Generate Pagination HTML manually
-            $pagination_html = '';
-            if ($total_pages > 1) {
-                // Determine base URL (including search query 'q')
-                $base_url = site_url('users/index') . '?';
-                if (!empty($q)) {
-                    $base_url .= 'q=' . urlencode($q) . '&';
-                }
+    public function get_user_by_username($username)
+    {
+        return $this->db->table('users')->where('username', $username)->get()->row_array();
+    }
 
-                $pagination_html .= '<div class="flex space-x-2">';
-                
-                // Previous page link
-                if ($page > 1) {
-                    $pagination_html .= '<a class="hp-page" href="' . $base_url . 'page=' . ($page - 1) . '">Previous</a>';
-                }
+    public function register_user($data)
+    {
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        return $this->db->table('users')->insert($data);
+    }
 
-                // Page numbers
-                for ($i = 1; $i <= $total_pages; $i++) {
-                    if ($i == $page) {
-                        $pagination_html .= '<span class="hp-current">' . $i . '</span>';
-                    } else {
-                        $pagination_html .= '<a class="hp-page" href="' . $base_url . 'page=' . $i . '">' . $i . '</a>';
-                    }
-                }
+    // ========================================================
+    // PAGINATION HELPER
+    // ========================================================
 
-                // Next page link
-                if ($page < $total_pages) {
-                    $pagination_html .= '<a class="hp-page" href="' . $base_url . 'page=' . ($page + 1) . '">Next</a>';
-                }
-                $pagination_html .= '</div>';
-            }
-            
-            // 4. Return the result
-            return [
-                'records' => $records ?: [],
-                'pagination' => $pagination_html
-            ];
+    private function generate_pagination($total_pages, $current_page, $q)
+    {
+        $output = '<nav class="flex items-center space-x-2">';
+        $base_url = site_url('users/index');
 
-        } catch (Exception $e) {
-             log_message('error', 'Database Error in get_all_students: ' . $e->getMessage());
-             return [
-                'records' => [],
-                'pagination' => ''
-            ];
+        // Previous button
+        $prev_disabled = ($current_page <= 1) ? 'opacity-50 cursor-not-allowed' : '';
+        $prev_page = max(1, $current_page - 1);
+        $prev_link = $base_url . '?page=' . $prev_page . (!empty($q) ? '&q=' . urlencode($q) : '');
+        $output .= "<a href='{$prev_link}' class='px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 {$prev_disabled}'>Previous</a>";
+
+        // Page numbers
+        $start = max(1, $current_page - 2);
+        $end = min($total_pages, $current_page + 2);
+
+        for ($i = $start; $i <= $end; $i++) {
+            $active_class = ($i == $current_page) ? 'bg-blue-600 text-white' : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-100';
+            $link = $base_url . '?page=' . $i . (!empty($q) ? '&q=' . urlencode($q) : '');
+            $output .= "<a href='{$link}' class='px-3 py-1 text-sm font-medium rounded-lg {$active_class}'>{$i}</a>";
         }
+        
+        if ($total_pages > $end) {
+            $output .= '<span class="px-3 py-1 text-sm text-gray-500">...</span>';
+            $last_link = $base_url . '?page=' . $total_pages . (!empty($q) ? '&q=' . urlencode($q) : '');
+            $output .= "<a href='{$last_link}' class='px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100'>{$total_pages}</a>";
+        }
+
+        // Next button
+        $next_disabled = ($current_page >= $total_pages) ? 'opacity-50 cursor-not-allowed' : '';
+        $next_page = min($total_pages, $current_page + 1);
+        $next_link = $base_url . '?page=' . $next_page . (!empty($q) ? '&q=' . urlencode($q) : '');
+        $output .= "<a href='{$next_link}' class='px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 {$next_disabled}'>Next</a>";
+
+        $output .= '</nav>';
+        return $output;
     }
 }

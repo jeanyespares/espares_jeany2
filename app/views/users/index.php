@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,12 +36,9 @@
         <i class="fa-solid fa-users"></i> Student Directory
       </h1>
       
-      <!-- AUTH LINKS -->
+      <!-- AUTH LINKS: Logout if logged in, otherwise Login/Register -->
       <div class="flex space-x-2">
         <?php if ($is_logged_in): ?>
-          <a href="<?= site_url('users/dashboard') ?>" class="btn-hover bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
-            <i class="fa-solid fa-tachometer-alt"></i> Dashboard
-          </a>
           <a href="<?= site_url('users/logout') ?>" class="btn-hover bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
             <i class="fa-solid fa-sign-out-alt"></i> Logout
           </a>
@@ -101,6 +99,8 @@
             <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider rounded-tl-xl">ID</th>
             <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Full Name</th>
             <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
+            
+            <!-- ACTIONS COLUMN HEADER (ADMIN ONLY) -->
             <?php if ($is_admin): ?>
               <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider rounded-tr-xl">Actions</th>
             <?php endif; ?>
@@ -114,6 +114,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><?= html_escape($user['fname'] . ' ' . $user['lname']) ?></td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 font-medium"><?= html_escape($user['email']) ?></td>
                 
+                <!-- ACTIONS CELL (ADMIN ONLY) -->
                 <?php if ($is_admin): ?>
                   <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <a href="<?= site_url('users/update/' . $user['id']) ?>" class="text-indigo-600 hover:text-indigo-900 mx-2 transition duration-150">
@@ -129,6 +130,7 @@
             <?php endforeach; ?>
           <?php else: ?>
             <tr>
+              <!-- Adjusted colspan based on whether Actions column is present -->
               <td colspan="<?= $is_admin ? 4 : 3 ?>" class="px-6 py-8 text-center text-gray-500">
                 No student records found.
               </td>

@@ -1,6 +1,8 @@
+```php
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
+// FALLBACK: Defines is_post_request() if the framework helper doesn't load it
 if (!function_exists('is_post_request')) {
     function is_post_request() {
         return $_SERVER['REQUEST_METHOD'] === 'POST';
@@ -9,6 +11,10 @@ if (!function_exists('is_post_request')) {
 
 class UsersController extends Controller
 {
+    /**
+     * UsersController constructor.
+     * Loads necessary models and helpers.
+     */
     public function __construct()
     {
         parent::__construct(); 
@@ -19,11 +25,17 @@ class UsersController extends Controller
         $this->call->helper('form'); 
     }
 
+    /**
+     * Helper function to check if the current user is an admin.
+     */
     private function is_admin()
     {
         return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
     }
 
+    /**
+     * Helper function to check if the current user is logged in (any role).
+     */
     private function is_logged_in()
     {
         return isset($_SESSION['user']);
@@ -31,8 +43,9 @@ class UsersController extends Controller
 
     public function index()
     {
+        // These are passed to the view to control what links/buttons are shown.
         $data['is_admin'] = $this->is_admin();
-        $data['is_logged_in'] = $this->is_logged_in();
+        $data['is_logged_in'] = $this->is_logged_in(); // Still useful for Login/Logout buttons
 
         $q = isset($_GET['q']) ? $this->io->get('q') : '';
         $page = isset($_GET['page']) ? $this->io->get('page') : 1; 
@@ -47,6 +60,7 @@ class UsersController extends Controller
 
     public function create()
     {
+        // SECURITY CHECK: Only Admin can access this function
         if (!$this->is_admin()) redirect(site_url('users/index')); 
 
         if (is_post_request()) {
@@ -68,6 +82,7 @@ class UsersController extends Controller
 
     public function update($id = null)
     {
+        // SECURITY CHECK: Only Admin can access this function
         if (!$this->is_admin()) redirect(site_url('users/index')); 
 
         if (is_post_request()) {
@@ -93,6 +108,7 @@ class UsersController extends Controller
 
     public function delete($id = null)
     {
+        // SECURITY CHECK: Only Admin can access this function
         if (!$this->is_admin()) redirect(site_url('users/index')); 
 
         if ($this->UsersModel->delete_student($id)) {
@@ -103,27 +119,19 @@ class UsersController extends Controller
         redirect(site_url('users/index'));
     }
 
-    public function dashboard()
-    {
-        if (!$this->is_logged_in()) {
-            $this->session->set_flashdata('error', 'You must be logged in to view the dashboard.');
-            redirect(site_url('users/login'));
-        }
 
-        $data['username'] = $_SESSION['user']['username'];
-        $data['role'] = $_SESSION['user']['role'];
-        
-        $this->call->view('users/dashboard', $data);
-    }
-
+    /**
+     * Example of an Admin-only page.
+     */
     public function admin_only()
     {
+        // SECURITY CHECK: Only Admin can access this page
         if (!$this->is_admin()) {
             $this->session->set_flashdata('error', 'Access denied. Administrator privileges required.');
             redirect(site_url('users/index'));
         }
         $data['user'] = $_SESSION['user'];
-        $this->call->view('users/admin_only_page', $data);
+        $this->call->view('users/admin_only_page', $data); // Assuming you have an admin_only_page view
     }
 
     public function register()
@@ -181,7 +189,8 @@ class UsersController extends Controller
                         'username' => $user['username'],
                         'role' => $user['role'], 
                     ];
-                    redirect(site_url('users/dashboard'));
+                    // Redirect to the main index page after login
+                    redirect(site_url('users/index'));
                 } else {
                     $data['error'] = 'Invalid username or password.';
                 }
