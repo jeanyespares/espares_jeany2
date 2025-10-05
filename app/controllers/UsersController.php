@@ -7,7 +7,7 @@ class UsersController extends Controller {
         parent::__construct();
         $this->call->model('UsersModel');
 
-        // ✅ Prevent session_start() warning
+        // ✅ Ensure session is started without error
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -20,20 +20,23 @@ class UsersController extends Controller {
     // 🧾 Register new user
     public function register()
     {
+        if (isset($_SESSION['user'])) {
+            redirect(site_url('/'));
+        }
+
         if ($this->io->method() === 'post') {
             $username = trim($this->io->post('username'));
             $password = trim($this->io->post('password'));
             $fname = trim($this->io->post('fname'));
             $lname = trim($this->io->post('lname'));
             $email = trim($this->io->post('email'));
-            $role = 'user'; // default role
+            $role = 'user';
 
             if (empty($username) || empty($password) || empty($fname) || empty($lname) || empty($email)) {
                 echo "All fields are required.";
                 return;
             }
 
-            // Hash password
             $hashed = password_hash($password, PASSWORD_DEFAULT);
 
             $data = [
@@ -46,7 +49,7 @@ class UsersController extends Controller {
             ];
 
             if ($this->UsersModel->insert($data)) {
-                echo "Registration successful. <a href='" . site_url('users/login') . "'>Login now</a>";
+                redirect(site_url('users/login'));
             } else {
                 echo "Error in registration.";
             }
@@ -58,6 +61,10 @@ class UsersController extends Controller {
     // 🔑 Login user
     public function login()
     {
+        if (isset($_SESSION['user'])) {
+            redirect(site_url('/'));
+        }
+
         if ($this->io->method() === 'post') {
             $username = trim($this->io->post('username'));
             $password = trim($this->io->post('password'));
@@ -70,8 +77,7 @@ class UsersController extends Controller {
                     'username' => $user['username'],
                     'role' => $user['role']
                 ];
-
-                redirect(site_url('users/dashboard'));
+                redirect(site_url('/'));
             } else {
                 echo "Invalid username or password.";
             }
@@ -84,10 +90,10 @@ class UsersController extends Controller {
     public function logout()
     {
         session_destroy();
-        redirect(site_url('users/login'));
+        redirect(site_url('/'));
     }
 
-    // 🏠 Dashboard (authorized area)
+    // 🏠 Dashboard
     public function dashboard()
     {
         if (!isset($_SESSION['user'])) {
@@ -101,7 +107,7 @@ class UsersController extends Controller {
         $this->call->view('users/dashboard', $data);
     }
 
-    // 👑 Admin-only section example
+    // 👑 Admin-only section
     public function admin_only()
     {
         if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
@@ -147,11 +153,12 @@ class UsersController extends Controller {
             $data = [
                 'fname' => $this->io->post('fname'),
                 'lname' => $this->io->post('lname'),
-                'email' => $this->io->post('email')
+                'email' => $this->io->post('email'),
+                // NOTE: Add username/password if needed
             ];
 
             if ($this->UsersModel->insert($data)) {
-                redirect(site_url());
+                redirect(site_url('/'));
             } else {
                 echo "Error in creating user.";
             }
@@ -176,7 +183,7 @@ class UsersController extends Controller {
             ];
 
             if ($this->UsersModel->update($id, $data)) {
-                redirect(site_url());
+                redirect(site_url('/'));
             } else {
                 echo "Error in updating information.";
             }
@@ -189,7 +196,7 @@ class UsersController extends Controller {
     function delete($id)
     {
         if ($this->UsersModel->delete($id)) {
-            redirect(site_url());
+            redirect(site_url('/'));
         } else {
             echo "Error in deleting user.";
         }
