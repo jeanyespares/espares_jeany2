@@ -22,7 +22,7 @@
 <body>
 
 <div class="header">
-    <h1>Student Directory</h1>
+    <h1>Registered BSIT Students 💖</h1>
     
     <div class="auth-buttons">
         <?php if ($is_logged_in): ?>

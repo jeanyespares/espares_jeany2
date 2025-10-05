@@ -29,10 +29,9 @@
 <body>
 
 <?php 
-// Check if the Controller passed the $data array
-if (empty($data)) {
-    $data = ['error' => ''];
-}
+// Kukunin ang Flashdata messages mula sa Session, hindi na kailangan ang $data check
+$error_message = $this->session->flashdata('error');
+$success_message = $this->session->flashdata('success');
 ?>
 
 <div class="w-full max-w-sm bg-white shadow-2xl rounded-3xl p-8 border-4 border-pink-200">
@@ -40,11 +39,17 @@ if (empty($data)) {
         <i class="fa-solid fa-lock"></i> Admin Login
     </h2>
     
-    <!-- Error Message -->
-    <?php if (!empty($data['error'])): ?>
+    <?php if ($success_message): ?>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 mb-4 rounded-lg" role="alert">
+            <p class="font-bold">Success!</p>
+            <p><?= html_escape($success_message); ?></p>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($error_message): ?>
         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-4 rounded-lg" role="alert">
             <p class="font-bold">Login Error</p>
-            <p><?= html_escape($data['error']); ?></p>
+            <p><?= html_escape($error_message); ?></p>
         </div>
     <?php endif; ?>
 
@@ -76,10 +81,9 @@ if (empty($data)) {
         </button>
     </form>
     
-    <!-- Link to directory -->
     <div class="link mt-4 text-center">
         <p class="text-sm text-gray-500">
-            <a href="<?= site_url('/'); ?>" class="text-pink-600 hover:text-pink-800 font-semibold transition duration-200">
+            <a href="<?= site_url('users/index'); ?>" class="text-pink-600 hover:text-pink-800 font-semibold transition duration-200">
                 ← Go back to Student Directory
             </a>
         </p>
