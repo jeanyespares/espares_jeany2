@@ -6,127 +6,142 @@ class UsersController extends Controller {
     {
         parent::__construct();
         $this->call->model('UsersModel');
-        session_start();
-    }
 
-    /* ===========================
-       🔐 AUTHENTICATION
-    ============================ */
-
-    public function login()
-    {
-        if ($this->io->method() == 'post') {
-            $username = $this->io->post('username');
-            $password = $this->io->post('password');
-
-            $user = $this->UsersModel->get_user($username);
-
-            if ($user && password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
-
-                if ($user['role'] === 'admin') {
-                    redirect(site_url('users/admin_dashboard'));
-                } else {
-                    redirect(site_url('users/dashboard'));
-                }
-            } else {
-                $data['error'] = 'Invalid username or password.';
-                $this->call->view('users/login', $data);
-            }
-        } else {
-            $this->call->view('users/login');
+        // ✅ Prevent session_start() warning
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
     }
 
-    public function logout()
-    {
-        session_destroy();
-        redirect(site_url('users/login'));
-    }
+    /* ===========================
+       🔐 AUTHENTICATION SECTION
+    =========================== */
 
+    // 🧾 Register new user
     public function register()
     {
-        if ($this->io->method() == 'post') {
+        if ($this->io->method() === 'post') {
+            $username = trim($this->io->post('username'));
+            $password = trim($this->io->post('password'));
+            $fname = trim($this->io->post('fname'));
+            $lname = trim($this->io->post('lname'));
+            $email = trim($this->io->post('email'));
+            $role = 'user'; // default role
+
+            if (empty($username) || empty($password) || empty($fname) || empty($lname) || empty($email)) {
+                echo "All fields are required.";
+                return;
+            }
+
+            // Hash password
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+
             $data = [
-                'fname' => $this->io->post('fname'),
-                'lname' => $this->io->post('lname'),
-                'email' => $this->io->post('email'),
-                'username' => $this->io->post('username'),
-                'password' => $this->io->post('password'),
-                'role' => $this->io->post('role')
+                'fname' => $fname,
+                'lname' => $lname,
+                'email' => $email,
+                'username' => $username,
+                'password' => $hashed,
+                'role' => $role
             ];
 
-            if ($this->UsersModel->register_user($data)) {
-                redirect(site_url('users/login'));
+            if ($this->UsersModel->insert($data)) {
+                echo "Registration successful. <a href='" . site_url('users/login') . "'>Login now</a>";
             } else {
-                $data['error'] = "Registration failed. Try again.";
-                $this->call->view('users/register', $data);
+                echo "Error in registration.";
             }
         } else {
             $this->call->view('users/register');
         }
     }
 
-    /* ===========================
-       👤 DASHBOARDS
-    ============================ */
+    // 🔑 Login user
+    public function login()
+    {
+        if ($this->io->method() === 'post') {
+            $username = trim($this->io->post('username'));
+            $password = trim($this->io->post('password'));
 
+            $user = $this->UsersModel->get_by_username($username);
+
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user'] = [
+                    'id' => $user['id'],
+                    'username' => $user['username'],
+                    'role' => $user['role']
+                ];
+
+                redirect(site_url('users/dashboard'));
+            } else {
+                echo "Invalid username or password.";
+            }
+        } else {
+            $this->call->view('users/login');
+        }
+    }
+
+    // 🚪 Logout
+    public function logout()
+    {
+        session_destroy();
+        redirect(site_url('users/login'));
+    }
+
+    // 🏠 Dashboard (authorized area)
     public function dashboard()
     {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['user'])) {
             redirect(site_url('users/login'));
         }
 
-        $this->call->view('users/dashboard');
+        $user = $_SESSION['user'];
+        $data['username'] = $user['username'];
+        $data['role'] = $user['role'];
+
+        $this->call->view('users/dashboard', $data);
     }
 
-    public function admin_dashboard()
+    // 👑 Admin-only section example
+    public function admin_only()
     {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-            redirect(site_url('users/dashboard'));
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+            echo "Access denied.";
+            return;
         }
 
-        $data['users'] = $this->UsersModel->page('', null, null)['records'];
-        $this->call->view('users/admin_dashboard', $data);
+        echo "Welcome Admin!";
     }
 
     /* ===========================
-       🧾 ORIGINAL CRUD (with pagination + search)
-    ============================ */
+       📋 ORIGINAL CRUD SECTION
+    =========================== */
 
     public function index()
     {
         $page = isset($_GET['page']) ? $this->io->get('page') : 1;
         $q = isset($_GET['q']) ? trim($this->io->get('q')) : '';
-        $records_per_page = 5;
 
+        $records_per_page = 5;
         $all = $this->UsersModel->page($q, $records_per_page, $page);
         $data['users'] = $all['records'];
         $total_rows = $all['total_rows'];
 
         $this->pagination->set_options([
-            'first_link'     => '⏮ First',
-            'last_link'      => 'Last ⏭',
-            'next_link'      => 'Next →',
-            'prev_link'      => '← Prev',
+            'first_link' => '⏮ First',
+            'last_link' => 'Last ⏭',
+            'next_link' => 'Next →',
+            'prev_link' => '← Prev',
             'page_delimiter' => '&page='
         ]);
-        $this->pagination->set_theme('default');
 
-        $this->pagination->initialize(
-            $total_rows,
-            $records_per_page,
-            $page,
-            site_url() . '?q=' . urlencode($q)
-        );
+        $this->pagination->set_theme('default');
+        $this->pagination->initialize($total_rows, $records_per_page, $page, site_url() . '?q=' . urlencode($q));
         $data['page'] = $this->pagination->paginate();
 
         $this->call->view('users/index', $data);
     }
 
-    public function create()
+    function create()
     {
         if ($this->io->method() == 'post') {
             $data = [
@@ -145,7 +160,7 @@ class UsersController extends Controller {
         }
     }
 
-    public function update($id)
+    function update($id)
     {
         $user = $this->UsersModel->find($id);
         if (!$user) {
@@ -171,7 +186,7 @@ class UsersController extends Controller {
         }
     }
 
-    public function delete($id)
+    function delete($id)
     {
         if ($this->UsersModel->delete($id)) {
             redirect(site_url());

@@ -1,57 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f9f9f9;
+            background: #f0f2f5;
             margin: 0;
             padding: 0;
         }
-        .header {
+        .navbar {
             background: #007bff;
             color: white;
             padding: 15px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 {
+            margin: 0;
         }
         .content {
-            margin: 50px auto;
-            width: 80%;
-            max-width: 600px;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 40px;
         }
         a {
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
             color: white;
-            background: #007bff;
-            padding: 10px 15px;
-            border-radius: 5px;
+            text-decoration: none;
+            background: #dc3545;
+            padding: 6px 12px;
+            border-radius: 4px;
         }
         a:hover {
-            background: #0056b3;
+            background: #c82333;
+        }
+        .info {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .role {
+            font-weight: bold;
+            color: #007bff;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>Welcome, <?= $_SESSION['username'] ?>!</h2>
+
+<div class="navbar">
+    <h2>Dashboard</h2>
+    <a href="<?= site_url('users/logout'); ?>">Logout</a>
+</div>
+
+<div class="content">
+    <div class="info">
+        <h3>Welcome, <?= htmlspecialchars($username); ?>!</h3>
+        <p>Your role is: <span class="role"><?= htmlspecialchars($role); ?></span></p>
+        <p>Access other features using the navigation.</p>
     </div>
+</div>
 
-    <div class="content">
-        <p>You are logged in as <strong><?= $_SESSION['role'] ?></strong>.</p>
-        <p>This is your user dashboard.</p>
-
-        <?php if($_SESSION['role'] === 'admin'): ?>
-            <a href="<?= site_url('admin/dashboard') ?>">Go to Admin Dashboard</a><br>
-        <?php endif; ?>
-
-        <a href="<?= site_url('users/logout') ?>">Logout</a>
-    </div>
 </body>
 </html>
