@@ -1,19 +1,37 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-// ITO DAPAT ANG CLASS NAME PARA TUGMA SA FILE NAME AT SA ROUTER
 class UsersController extends Controller { 
+    
+    // Use a property to hold the model instance if necessary, 
+    // though the framework usually handles $this->users_model
+    protected $users_model; 
+
     public function __construct() {
+        // HAKBANG 1: TANGING parent constructor lang ang tawagin muna
         parent::__construct();
+        
+        // HAKBANG 2: Tawagin ang init function para mag-load ng resources
+        $this->init_controller();
+    }
+
+    // New method to handle all resource loading
+    private function init_controller() {
+        // Load the UsersModel, Libraries, and Helpers DITO!
         $this->model->load('users_model');
+        // I-set ang property para maging accessible sa ibang methods
+        $this->users_model = $this->model->users_model; 
+        
         $this->call->library('session');
         $this->call->helper('url'); 
     }
 
+    // --- Helper function for checking admin status ---
     private function is_admin() {
         return $this->session->has_userdata('user') && $this->session->userdata('user')['role'] === 'admin';
     }
 
+    // --- Helper function for redirecting if not admin ---
     private function check_admin() {
         if (!$this->is_admin()) {
             $this->session->set_flashdata('error', 'Access Denied. Admin privilege required.');
@@ -26,6 +44,7 @@ class UsersController extends Controller {
         $q = $this->io->get('q');
         $page = $this->io->get('page') ?? 1;
 
+        // Gamitin ang $this->users_model property na na-initialize na sa init_controller()
         $results = $this->users_model->get_all_students($q, 5, $page);
 
         $data['users'] = $results['records']; 
@@ -38,7 +57,10 @@ class UsersController extends Controller {
         $this->call->view('users/index', $data);
     }
 
-    /*** Display Login Form or process POST data */
+    // ========================================================
+    // AUTHENTICATION LOGIC
+    // ========================================================
+
     public function login() {
         if ($this->session->has_userdata('user')) {
             redirect(site_url('users/index')); 
@@ -47,7 +69,7 @@ class UsersController extends Controller {
         if ($this->io->post()) {
             $username = $this->io->post('username');
             $password = $this->io->post('password');
-            $user = $this->users_model->get_user_by_username($username);
+            $user = $this->users_model->get_user_by_username($username); // Paggamit ng $this->users_model
 
             if ($user && password_verify($password, $user['password'])) {
                 $this->session->set_userdata('user', [
@@ -65,7 +87,6 @@ class UsersController extends Controller {
         $this->call->view('users/login');
     }
 
-    /*** Process Registration POST data */
     public function register() {
         if ($this->io->post()) {
             $data = [
@@ -88,7 +109,6 @@ class UsersController extends Controller {
         $this->call->view('users/register');
     }
 
-    /*** Logout */
     public function logout() {
         $this->session->unset_userdata('user');
         $this->session->sess_destroy();
@@ -96,9 +116,13 @@ class UsersController extends Controller {
         redirect(site_url('users/login'));
     }
 
+    // ========================================================
     // CRUD OPERATIONS (Admin only)
+    // ========================================================
+
     public function create() {
         $this->check_admin();
+
         if ($this->io->post()) {
             $data = [
                 'fname' => $this->io->post('fname'),
@@ -118,6 +142,7 @@ class UsersController extends Controller {
 
     public function update($id) {
         $this->check_admin();
+
         $data['student'] = $this->users_model->get_student_by_id($id);
         if (!$data['student']) {
             $this->session->set_flashdata('error', 'Student not found.');
