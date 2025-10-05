@@ -1,168 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Directory</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Dancing+Script:wght=700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="<?=base_url();?>/public/style.css">
+<?php
+defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe);
+class Users extends Controller {
+    public function __construct() {
+        parent::__construct();
+        // Load the UsersModel to handle all data and auth logic
+        $this->model->load('users_model');
+        // Load the session library for auth state
+        $this->call->library('session');
     }
-    .font-title {
-      font-family: 'Dancing Script', cursive;
+
+    /*** Main Index page (Student Directory) */
+    public function index() {
+        // 1. Get current search query and page number
+        $q = $this->io->get('q');
+        $page = $this->io->get('page') ?? 1;
+
+        // 2. Fetch data from the Model
+        $results = $this->users_model->get_all_students($q, 5, $page);
+
+        // 3. Prepare View Data
+        $data['users'] = $results['records']; // The actual student records
+        $data['pagination'] = $results['pagination']; // The HTML pagination links
+
+        // 4. Authentication and Role Check
+        $data['is_logged_in'] = $this->session->has_userdata('user');
+        $data['is_admin'] = false;
+        if ($data['is_logged_in']) {
+            $user_data = $this->session->userdata('user');
+            $data['is_admin'] = ($user_data['role'] === 'admin');
+        }
+
+        // 5. Load the main view
+        $this->call->view('users/index', $data);
     }
-    .btn-hover:hover {
-      transform: scale(1.07) rotate(-1deg);
-      box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff;
-    }
-    table thead tr {
-      background: linear-gradient(90deg, #f472b6, #ec4899, #d946ef);
-    }
-    .hp-page {
-      padding: 6px 12px;
-      background: #f9a8d4;
-      border-radius: 9999px;
-      color: white;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    .hp-page:hover {
-      background: #f472b6;
-      transform: scale(1.1);
-    }
-    .hp-current {
-      padding: 6px 12px;
-      background: #d946ef;
-      border-radius: 9999px;
-      color: white;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body class="min-h-screen">
 
-  <!-- Header -->
-  <nav class="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 shadow-lg border-b-4 border-pink-300">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <h1 class="text-white font-title text-3xl flex items-center gap-2">
-        <i class="fa-solid fa-sparkles"></i> Registered BSIT Students 💖
-      </h1>
+    // ========================================================
+    // AUTHENTICATION LOGIC
+    // ========================================================
 
-      <div class="flex items-center space-x-4">
-        <?php if ($is_logged_in): ?>
-          <span class="text-white text-lg font-semibold flex items-center gap-2">
-            <i class="fa-solid fa-user-circle"></i> Hello, <?= html_escape($_SESSION['user']['username']) ?>!
-          </span>
-          <a href="<?= site_url('users/logout') ?>"
-             class="btn-hover bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
-            <i class="fa-solid fa-sign-out-alt"></i> Logout
-          </a>
-        <?php else: ?>
-          <a href="<?= site_url('users/login') ?>"
-             class="btn-hover bg-pink-300 hover:bg-pink-400 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
-            <i class="fa-solid fa-sign-in-alt"></i> Login
-          </a>
-        <?php endif; ?>
-      </div>
-    </div>
-  </nav>
+    /*** Display Login Form or process POST data */
+    public function login() {
+        if ($this->session->has_userdata('user')) {
+            redirect('users/dashboard'); // Already logged in
+        }
 
-  <!-- Content -->
-  <div class="max-w-6xl mx-auto mt-10 px-4">
-    <div class="bg-white shadow-2xl rounded-3xl p-6 border-4 border-pink-200">
+        if ($this->io->post()) {
+            $username = $this->io->post('username');
+            $password = $this->io->post('password');
+            $user = $this->users_model->get_user_by_username($username);
 
-      <!-- Top Actions -->
-      <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-        <form method="get" action="<?=site_url('users/index')?>" class="flex">
-          <input
-            type="text"
-            name="q"
-            value="<?=html_escape($_GET['q'] ?? '')?>"
-            placeholder="🔍 Search student..."
-            class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
-          <button type="submit" class="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-r-2xl shadow transition-all duration-300">
-            <i class="fa fa-search"></i>
-          </button>
-        </form>
-
-        <?php if ($is_admin): ?>
-        <a href="<?=site_url('users/create')?>"
-           class="btn-hover inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white font-bold px-5 py-2 rounded-2xl shadow-md transition-all duration-300">
-          <i class="fa-solid fa-user-plus"></i> Add Student
-        </a>
-        <?php endif; ?>
-      </div>
-
-      <!-- Table -->
-      <div class="overflow-x-auto rounded-3xl border-4 border-pink-200 shadow-md">
-        <table class="w-full text-center border-collapse">
-          <thead>
-            <tr class="text-white uppercase tracking-wider text-lg">
-              <th class="py-3 px-4">ID</th>
-              <th class="py-3 px-4">Firstname</th>
-              <th class="py-3 px-4">Lastname</th>
-              <th class="py-3 px-4">Email</th>
-              <?php if ($is_admin): ?>
-              <th class="py-3 px-4">Action</th>
-              <?php endif; ?>
-            </tr>
-          </thead>
-          <tbody class="text-gray-700 text-base">
-            <?php if(!empty($users)): ?>
-              <?php foreach(html_escape($users) as $user): ?>
-                <tr class="hover:bg-pink-100 transition duration-200">
-                  <td class="py-3 px-4 font-medium"><?=($user['id']);?></td>
-                  <td class="py-3 px-4"><?=($user['fname']);?></td>
-                  <td class="py-3 px-4"><?=($user['lname']);?></td>
-                  <td class="py-3 px-4"><?=($user['email']);?></td>
-                  <?php if ($is_admin): ?>
-                  <td class="py-3 px-4 flex justify-center gap-3">
-                    <a href="<?=site_url('users/update/'.$user['id']);?>"
-                       class="btn-hover bg-green-400 hover:bg-green-500 text-white px-3 py-1 rounded-xl shadow flex items-center gap-1">
-                      <i class="fa-solid fa-pen-to-square"></i> Update
-                    </a>
-                    <a href="<?=site_url('users/delete/'.$user['id']);?>"
-                       class="btn-hover bg-red-400 hover:bg-red-500 text-white px-3 py-1 rounded-xl shadow flex items-center gap-1">
-                      <i class="fa-solid fa-trash"></i> Delete
-                    </a>
-                  </td>
-                  <?php endif; ?>
-                </tr>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <tr><td colspan="<?= $is_admin ? 5 : 4 ?>" class="py-4 text-gray-500">No students found 😿</td></tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div class="mt-6 flex justify-center">
-        <div class="pagination flex space-x-2">
-          <?php
-            if (!empty($page)) {
-              echo str_replace(
-                ['<a ', '<strong>', '</strong>'],
-                [
-                  '<a class="hp-page"',
-                  '<span class="hp-current">',
-                  '</span>'
-                ],
-                $page
-              );
+            if ($user && password_verify($password, $user['password'])) {
+                // Login successful
+                $this->session->set_userdata('user', [
+                    'id' => $user['id'],
+                    'username' => $user['username'],
+                    'role' => $user['role']
+                ]);
+                $this->session->set_flashdata('success', 'Welcome, ' . $user['username'] . '! You have successfully logged in.');
+                redirect('users/dashboard');
+            } else {
+                // Login failed
+                $this->session->set_flashdata('error', 'Invalid username or password.');
+                redirect('users/login');
             }
-          ?>
-        </div>
-      </div>
+        }
 
-    </div>
-  </div>
+        $this->call->view('users/login');
+    }
 
-</body>
-</html>
+    /*** Process Registration POST data */
+    public function register() {
+        if ($this->io->post()) {
+            $data = [
+                'username' => $this->io->post('username'),
+                'password' => $this->io->post('password'),
+                'fname' => $this->io->post('fname'),
+                'lname' => $this->io->post('lname'),
+                'email' => $this->io->post('email'),
+                'role' => 'admin' // Default newly registered users to admin for demo purposes
+            ];
+
+            if ($this->users_model->register_user($data)) {
+                $this->session->set_flashdata('success', 'Registration successful! You can now log in.');
+                redirect('users/login');
+            } else {
+                $this->session->set_flashdata('error', 'Registration failed. Username or email might already be in use.');
+                redirect('users/register');
+            }
+        }
+
+        $this->call->view('users/register');
+    }
+
+    /*** User Dashboard page */
+    public function dashboard() {
+        if (!$this->session->has_userdata('user')) {
+            redirect('users/login'); // Not logged in
+        }
+
+        $user_data = $this->session->userdata('user');
+        $data['username'] = $user_data['username'];
+        $data['role'] = $user_data['role'];
+
+        $this->call->view('users/dashboard', $data);
+    }
+
+    /*** Logout */
+    public function logout() {
+        $this->session->unset_userdata('user');
+        $this->session->sess_destroy();
+        $this->session->set_flashdata('success', 'You have been logged out.');
+        redirect('users/login');
+    }
+
+    // ========================================================
+    // CRUD OPERATIONS (Admin only)
+    // ========================================================
+
+    private function check_admin() {
+        if (!$this->session->has_userdata('user') || $this->session->userdata('user')['role'] !== 'admin') {
+            $this->session->set_flashdata('error', 'Access Denied. Admin privilege required.');
+            redirect('/');
+        }
+    }
+
+    public function create() {
+        $this->check_admin();
+
+        if ($this->io->post()) {
+            $data = [
+                'fname' => $this->io->post('fname'),
+                'lname' => $this->io->post('lname'),
+                'email' => $this->io->post('email'),
+            ];
+
+            if ($this->users_model->add_student($data)) {
+                $this->session->set_flashdata('success', 'Student added successfully!');
+                redirect('/');
+            } else {
+                $this->session->set_flashdata('error', 'Failed to add student.');
+            }
+        }
+
+        $this->call->view('users/create_student');
+    }
+
+    public function update($id) {
+        $this->check_admin();
+
+        $data['student'] = $this->users_model->get_student_by_id($id);
+        if (!$data['student']) {
+            $this->session->set_flashdata('error', 'Student not found.');
+            redirect('/');
+        }
+
+        if ($this->io->post()) {
+            $update_data = [
+                'fname' => $this->io->post('fname'),
+                'lname' => $this->io->post('lname'),
+                'email' => $this->io->post('email'),
+            ];
+
+            if ($this->users_model->update_student($id, $update_data)) {
+                $this->session->set_flashdata('success', 'Student record updated successfully!');
+                redirect('/');
+            } else {
+                $this->session->set_flashdata('error', 'Failed to update student record.');
+            }
+        }
+
+        $this->call->view('users/update_student', $data);
+    }
+
+    public function delete($id) {
+        $this->check_admin();
+
+        if ($this->users_model->delete_student($id)) {
+            $this->session->set_flashdata('success', 'Student record deleted successfully!');
+        } else {
+            $this->session->set_flashdata('error', 'Failed to delete student record.');
+        }
+
+        redirect('/');
+    }
+}
