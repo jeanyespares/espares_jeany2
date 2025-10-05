@@ -3,31 +3,37 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 class UsersController extends Controller { 
     
-    // Use a property to hold the model instance if necessary, 
-    // though the framework usually handles $this->users_model
-    protected $users_model; 
+    // Properties to hold the loaded model and state
+    protected $users_model;
+    protected $resources_loaded = false;
 
     public function __construct() {
-        // HAKBANG 1: TANGING parent constructor lang ang tawagin muna
+        // TANGING parent::__construct() lang ang iwanan dito.
         parent::__construct();
-        
-        // HAKBANG 2: Tawagin ang init function para mag-load ng resources
-        $this->init_controller();
+        // Huwag nang tawagin ang anumang loading code dito.
     }
 
-    // New method to handle all resource loading
-    private function init_controller() {
-        // Load the UsersModel, Libraries, and Helpers DITO!
+    // New method to handle all resource loading, called lazily.
+    private function ensure_resources_loaded() {
+        if ($this->resources_loaded) {
+            return;
+        }
+        
+        // Heto na ang loading logic na dating nasa constructor:
+        // 1. Load Model and store it locally
         $this->model->load('users_model');
-        // I-set ang property para maging accessible sa ibang methods
         $this->users_model = $this->model->users_model; 
         
+        // 2. Load Library and Helper
         $this->call->library('session');
         $this->call->helper('url'); 
+        
+        $this->resources_loaded = true;
     }
 
     // --- Helper function for checking admin status ---
     private function is_admin() {
+        $this->ensure_resources_loaded(); // Dapat tawagin muna ito
         return $this->session->has_userdata('user') && $this->session->userdata('user')['role'] === 'admin';
     }
 
@@ -41,10 +47,11 @@ class UsersController extends Controller {
 
     /*** Main Index page (Student Directory) */
     public function index() {
+        $this->ensure_resources_loaded(); // I-LOAD ang resources muna!
+        
         $q = $this->io->get('q');
         $page = $this->io->get('page') ?? 1;
 
-        // Gamitin ang $this->users_model property na na-initialize na sa init_controller()
         $results = $this->users_model->get_all_students($q, 5, $page);
 
         $data['users'] = $results['records']; 
@@ -62,6 +69,8 @@ class UsersController extends Controller {
     // ========================================================
 
     public function login() {
+        $this->ensure_resources_loaded(); // I-LOAD ang resources muna!
+        
         if ($this->session->has_userdata('user')) {
             redirect(site_url('users/index')); 
         }
@@ -69,7 +78,7 @@ class UsersController extends Controller {
         if ($this->io->post()) {
             $username = $this->io->post('username');
             $password = $this->io->post('password');
-            $user = $this->users_model->get_user_by_username($username); // Paggamit ng $this->users_model
+            $user = $this->users_model->get_user_by_username($username);
 
             if ($user && password_verify($password, $user['password'])) {
                 $this->session->set_userdata('user', [
@@ -88,6 +97,8 @@ class UsersController extends Controller {
     }
 
     public function register() {
+        $this->ensure_resources_loaded(); // I-LOAD ang resources muna!
+        
         if ($this->io->post()) {
             $data = [
                 'username' => $this->io->post('username'),
@@ -110,6 +121,8 @@ class UsersController extends Controller {
     }
 
     public function logout() {
+        $this->ensure_resources_loaded(); // I-LOAD ang resources muna!
+        
         $this->session->unset_userdata('user');
         $this->session->sess_destroy();
         $this->session->set_flashdata('success', 'You have been logged out.');
@@ -121,6 +134,7 @@ class UsersController extends Controller {
     // ========================================================
 
     public function create() {
+        $this->ensure_resources_loaded(); // I-LOAD ang resources muna!
         $this->check_admin();
 
         if ($this->io->post()) {
@@ -141,6 +155,7 @@ class UsersController extends Controller {
     }
 
     public function update($id) {
+        $this->ensure_resources_loaded(); // I-LOAD ang resources muna!
         $this->check_admin();
 
         $data['student'] = $this->users_model->get_student_by_id($id);
@@ -167,6 +182,7 @@ class UsersController extends Controller {
     }
 
     public function delete($id) {
+        $this->ensure_resources_loaded(); // I-LOAD ang resources muna!
         $this->check_admin();
 
         if ($this->users_model->delete_student($id)) {
