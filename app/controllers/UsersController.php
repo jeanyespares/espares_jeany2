@@ -14,10 +14,6 @@ if (!function_exists('is_post_request')) {
 
 class UsersController extends Controller
 {
-    /**
-     * UsersController constructor.
-     * Loads necessary models and helpers.
-     */
     public function __construct()
     {
         parent::__construct(); 
@@ -44,8 +40,7 @@ class UsersController extends Controller
             return;
         }
 
-        $data = [];
-        $data['error'] = '';
+        $data = ['error' => ''];
 
         if (is_post_request()) {
             $username = trim($this->io->post('username')); 
@@ -84,8 +79,7 @@ class UsersController extends Controller
             redirect(site_url('/')); 
         }
 
-        $data = [];
-        $data['error'] = '';
+        $data = ['error' => ''];
 
         if (is_post_request()) {
             $username = trim($this->io->post('username')); 
@@ -129,8 +123,8 @@ class UsersController extends Controller
         $data['is_admin'] = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
 
-        $page = $this->io->get('page') ?: 1;
-        $q = trim($this->io->get('q')) ?: '';
+        $page = isset($_GET['page']) ? $this->io->get('page') : 1;
+        $q = isset($_GET['q']) ? trim($this->io->get('q')) : '';
 
         $records_per_page = 5;
         $all = $this->UsersModel->get_all_students($q, $records_per_page, $page);
