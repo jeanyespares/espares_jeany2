@@ -93,8 +93,15 @@ if ( ! function_exists('redirect'))
 		if (headers_sent() === false)
 		{
 			header('Location: ' . $uri, true, ($permanent === true) ? 301 : 302);
+		} else {
+			// If headers already sent, attempt a JS and meta refresh fallback so redirect still occurs
+			echo '<script>window.location.href="' . htmlspecialchars($uri, ENT_QUOTES) . '";</script>';
+			echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($uri, ENT_QUOTES) . '" /></noscript>';
 		}
-		($exit === true) ?? exit();
+
+		if ($exit === true) {
+			exit;
+		}
 	}
 }
 

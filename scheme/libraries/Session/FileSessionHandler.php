@@ -79,10 +79,40 @@ class FileSessionHandler extends Session implements SessionHandlerInterface {
      */
     public function open($save_path, $session_name): bool {
         $this->save_path = $save_path;
-        $this->file_path = $this->save_path.DIRECTORY_SEPARATOR.$session_name . '_';
-        if ( !is_dir($this->save_path) ) {
-            mkdir($this->save_path, 0700, TRUE);
+
+        // Normalize desired path
+        $desired = rtrim($this->save_path, '/\\');
+
+        // If empty, immediately use system temp dir
+        if (empty($desired)) {
+            $this->save_path = sys_get_temp_dir();
+        } else {
+            // If it already exists and is writable, use it
+            if (is_dir($desired) && is_writable($desired)) {
+                $this->save_path = $desired;
+            } else {
+                // If it doesn't exist, check whether we can create it by ensuring
+                // the parent directory is writable. Avoid calling mkdir when parent
+                // isn't writable to prevent permission warnings.
+                if (!is_dir($desired)) {
+                    $parent = dirname($desired);
+                    if (is_dir($parent) && is_writable($parent)) {
+                        // attempt to create
+                        @mkdir($desired, 0700, true);
+                    }
+                }
+
+                // Final validation: if the desired path exists and is writable use it,
+                // otherwise fall back to system temp dir
+                if (is_dir($desired) && is_writable($desired)) {
+                    $this->save_path = $desired;
+                } else {
+                    $this->save_path = sys_get_temp_dir();
+                }
+            }
         }
+
+        $this->file_path = rtrim($this->save_path, '/\\') . DIRECTORY_SEPARATOR . $session_name . '_';
         return true;
     }
 
