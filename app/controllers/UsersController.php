@@ -1,51 +1,38 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-require_once '../models/users_model.php';
+require_once __DIR__ . '/../models/UsersModel.php';
 
 class UsersController extends Controller { 
     
-    protected $users_model_instance; // Store Users_model instance
+    protected $users_model_instance;
 
     public function __construct() {
         parent::__construct();
         $this->initialize_resources();
     }
 
-    /**
-     * Initialize libraries, helpers, and model instance
-     */
     private function initialize_resources() {
         if (isset($this->users_model_instance)) {
             return;
         }
 
-        // --- LOAD LIBRARIES / HELPERS ---
         $this->call->library('session');
         $this->call->helper('url');
 
-        // --- LOAD MODEL ---
-        $this->users_model_instance = new Users_model();
+        $this->users_model_instance = new UsersModel();
     }
 
-    /**
-     * Check if current user is admin
-     */
     private function is_admin() {
         return $this->session->has_userdata('user') && $this->session->userdata('user')['role'] === 'admin';
     }
 
-    /**
-     * Redirect if not admin
-     */
     private function check_admin() {
         if (!$this->is_admin()) {
             $this->session->set_flashdata('error', 'Access Denied. Admin privilege required.');
             redirect(site_url('users/index'));
         }
     }
-
-    // ===================== PUBLIC METHODS =====================
 
     public function index() {
         $q = $this->io->get('q');
@@ -118,8 +105,6 @@ class UsersController extends Controller {
         $this->session->set_flashdata('success', 'You have been logged out.');
         redirect(site_url('users/login'));
     }
-
-    // ===================== CRUD OPERATIONS =====================
 
     public function create() {
         $this->check_admin();
