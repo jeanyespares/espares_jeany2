@@ -55,14 +55,10 @@
       </h1>
 
       <div class="flex items-center space-x-4">
-        <?php if (isset($_SESSION['user'])): ?>
+        <?php if ($is_logged_in): ?>
           <span class="text-white text-lg font-semibold flex items-center gap-2">
             <i class="fa-solid fa-user-circle"></i> Hello, <?= html_escape($_SESSION['user']['username']) ?>!
           </span>
-          <a href="<?= site_url('users/dashboard') ?>"
-             class="btn-hover bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
-            <i class="fa-solid fa-tachometer-alt"></i> Dashboard
-          </a>
           <a href="<?= site_url('users/logout') ?>"
              class="btn-hover bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
             <i class="fa-solid fa-sign-out-alt"></i> Logout
@@ -71,10 +67,6 @@
           <a href="<?= site_url('users/login') ?>"
              class="btn-hover bg-pink-300 hover:bg-pink-400 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
             <i class="fa-solid fa-sign-in-alt"></i> Login
-          </a>
-          <a href="<?= site_url('users/register') ?>"
-             class="btn-hover bg-purple-300 hover:bg-purple-400 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
-            <i class="fa-solid fa-user-plus"></i> Register
           </a>
         <?php endif; ?>
       </div>
@@ -99,10 +91,12 @@
           </button>
         </form>
 
+        <?php if ($is_admin): ?>
         <a href="<?=site_url('users/create')?>"
            class="btn-hover inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white font-bold px-5 py-2 rounded-2xl shadow-md transition-all duration-300">
           <i class="fa-solid fa-user-plus"></i> Add Student
         </a>
+        <?php endif; ?>
       </div>
 
       <!-- Table -->
@@ -114,7 +108,9 @@
               <th class="py-3 px-4">Firstname</th>
               <th class="py-3 px-4">Lastname</th>
               <th class="py-3 px-4">Email</th>
+              <?php if ($is_admin): ?>
               <th class="py-3 px-4">Action</th>
+              <?php endif; ?>
             </tr>
           </thead>
           <tbody class="text-gray-700 text-base">
@@ -125,6 +121,7 @@
                   <td class="py-3 px-4"><?=($user['fname']);?></td>
                   <td class="py-3 px-4"><?=($user['lname']);?></td>
                   <td class="py-3 px-4"><?=($user['email']);?></td>
+                  <?php if ($is_admin): ?>
                   <td class="py-3 px-4 flex justify-center gap-3">
                     <a href="<?=site_url('users/update/'.$user['id']);?>"
                        class="btn-hover bg-green-400 hover:bg-green-500 text-white px-3 py-1 rounded-xl shadow flex items-center gap-1">
@@ -135,10 +132,11 @@
                       <i class="fa-solid fa-trash"></i> Delete
                     </a>
                   </td>
+                  <?php endif; ?>
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
-              <tr><td colspan="5" class="py-4 text-gray-500">No students found 😿</td></tr>
+              <tr><td colspan="<?= $is_admin ? 5 : 4 ?>" class="py-4 text-gray-500">No students found 😿</td></tr>
             <?php endif; ?>
           </tbody>
         </table>
