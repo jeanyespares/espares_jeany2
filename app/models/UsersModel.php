@@ -3,7 +3,6 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 class UsersModel extends Model {
 
-    // FIX 1: Must be 'protected' to comply with the parent Model class (E_COMPILE_ERROR fix).
     protected $table = 'students'; 
 
     // --- Utility Methods for Counting ---
@@ -23,15 +22,18 @@ class UsersModel extends Model {
                     ->or_like('email', $q)
                     ->group_end();
         }
-        // FIX 2: Use count_all_results() for reliable row counting (Fixes all num_rows() errors).
-        return $this->db->count_all_results(); 
+        
+        // ⭐️ FINAL FIX: Execute the query and count the resulting array manually.
+        $results = $this->db->get_all(); 
+        return count($results); 
     }
 
     public function count_all_users()
     {
         $this->db->table($this->table);
-        // FIX 2: Use count_all_results() for reliable row counting.
-        return $this->db->count_all_results(); 
+        // ⭐️ FINAL FIX: Execute the query and count the resulting array manually.
+        $results = $this->db->get_all(); 
+        return count($results); 
     }
 
     // --- CRUD and Login/Register Methods ---
@@ -97,7 +99,7 @@ class UsersModel extends Model {
     public function get_all_students($q = '', $records_per_page = 5, $page = 1)
     {
         try {
-            // 1. Count Total Records (with search filter)
+            // 1. Count Total Records (uses the reliable count_students function)
             $total_records = $this->count_students($q);
             $total_pages = ceil($total_records / $records_per_page);
             $offset = ($page - 1) * $records_per_page;
@@ -113,7 +115,7 @@ class UsersModel extends Model {
                         ->group_end();
             }
 
-            // Manual LIMIT and OFFSET (Fix for undefined paginate() method)
+            // Manual LIMIT and OFFSET
             $this->db->order_by('id', 'DESC');
             $this->db->limit($records_per_page, $offset);
             $records = $this->db->get_all();
@@ -150,7 +152,7 @@ class UsersModel extends Model {
                 $pagination_html .= '</div>';
             }
             
-            // 4. Return the result (Fix for "Undefined array key 'pagination'" error)
+            // 4. Return the result
             return [
                 'records' => $records ?: [],
                 'pagination' => $pagination_html
