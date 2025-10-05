@@ -3,8 +3,8 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 require_once __DIR__ . '/../models/UsersModel.php';
 
-class UsersController extends Controller { 
-    
+class UsersController extends Controller {
+
     protected $users_model_instance;
 
     public function __construct() {
@@ -13,18 +13,16 @@ class UsersController extends Controller {
     }
 
     private function initialize_resources() {
-        if (isset($this->users_model_instance)) {
-            return;
-        }
+        if (isset($this->users_model_instance)) return;
 
         $this->call->library('session');
         $this->call->helper('url');
-
         $this->users_model_instance = new UsersModel();
     }
 
     private function is_admin() {
-        return $this->session->has_userdata('user') && $this->session->userdata('user')['role'] === 'admin';
+        $user = $this->session->userdata('user');
+        return $user && isset($user['role']) && $user['role'] === 'admin';
     }
 
     private function check_admin() {
@@ -38,15 +36,18 @@ class UsersController extends Controller {
 
     public function index() {
         $q = $this->io->get('q') ?? '';
-        $page = $this->io->get('page') ?? 1;
+        $page = (int) ($this->io->get('page') ?? 1);
+        $limit = 5;
 
-        $results = $this->users_model_instance->get_all_students($q, 5, $page);
+        $results = $this->users_model_instance->get_all_students($q, $limit, $page);
 
-        $data['users'] = $results['records'];
-        $data['pagination'] = $results['pagination'];
-        $data['q'] = $q;
-        $data['is_logged_in'] = $this->session->has_userdata('user');
-        $data['is_admin'] = $this->is_admin();
+        $data = [
+            'users' => $results['records'],
+            'pagination' => $results['pagination'],
+            'q' => $q,
+            'is_logged_in' => $this->session->has_userdata('user'),
+            'is_admin' => $this->is_admin()
+        ];
 
         $this->call->view('users/index', $data);
     }
@@ -82,7 +83,7 @@ class UsersController extends Controller {
         if ($this->io->post()) {
             $data = [
                 'username' => $this->io->post('username'),
-                'password' => $this->io->post('password'),
+                'password' => password_hash($this->io->post('password'), PASSWORD_DEFAULT),
                 'fname' => $this->io->post('fname'),
                 'lname' => $this->io->post('lname'),
                 'email' => $this->io->post('email'),
@@ -117,7 +118,7 @@ class UsersController extends Controller {
             $data = [
                 'fname' => $this->io->post('fname'),
                 'lname' => $this->io->post('lname'),
-                'email' => $this->io->post('email'),
+                'email' => $this->io->post('email')
             ];
 
             if ($this->users_model_instance->add_student($data)) {
@@ -134,8 +135,8 @@ class UsersController extends Controller {
     public function update($id) {
         $this->check_admin();
 
-        $data['student'] = $this->users_model_instance->get_student_by_id($id);
-        if (!$data['student']) {
+        $student = $this->users_model_instance->get_student_by_id($id);
+        if (!$student) {
             $this->session->set_flashdata('error', 'Student not found.');
             redirect(site_url('users/index'));
         }
@@ -144,7 +145,7 @@ class UsersController extends Controller {
             $update_data = [
                 'fname' => $this->io->post('fname'),
                 'lname' => $this->io->post('lname'),
-                'email' => $this->io->post('email'),
+                'email' => $this->io->post('email')
             ];
 
             if ($this->users_model_instance->update_student($id, $update_data)) {
@@ -155,7 +156,7 @@ class UsersController extends Controller {
             }
         }
 
-        $this->call->view('users/update_student', $data);
+        $this->call->view('users/update_student', ['student' => $student]);
     }
 
     public function delete($id) {
