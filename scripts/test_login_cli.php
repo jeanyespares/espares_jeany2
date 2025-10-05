@@ -15,7 +15,7 @@ try {
 }
 
 $username = $argv[1] ?? 'admin';
-$password = $argv[2] ?? 'admin123';
+$password = $argv[2] ?? 'jeany21';
 
 $stmt = $pdo->prepare('SELECT * FROM users WHERE username = ? LIMIT 1');
 $stmt->execute([$username]);
