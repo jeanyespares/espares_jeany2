@@ -1,184 +1,169 @@
-```php
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-class UsersModel extends Model
-{
-    /**
-     * UsersModel constructor.
-     * Automatically runs initialization logic upon creation.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        // Call the initialization logic once the Model and DB are ready
-        $this->initialize_data(); 
-    }
+class UsersModel extends Model {
+
+    protected $table = 'students'; 
+
+    // --- Utility Methods for Counting ---
 
     /**
-     * Initializes the database with an Admin user and sample students
-     * if the tables are empty. This is for ensuring the app is runnable immediately.
+     * Counts all students based on search query.
+     * @param string $q Search query.
+     * @return int
      */
-    private function initialize_data()
+    private function count_students($q = '')
     {
-        // 1. Check and create the Admin user (if no users exist)
-        // Direct count check using a fresh query to avoid previous query conflicts.
-        $user_count = $this->db->table('users')->get()->num_rows();
-
-        if ($user_count === 0) {
-            $admin_data = [
-                'username' => 'admin_jeany',
-                'password' => 'admin123', // This will be hashed in register_user
-                'role' => 'admin',
-                'fname' => 'Jeany', 
-                'lname' => 'Admin',
-                'email' => 'jeany.admin@example.com' 
-            ];
-            // Use register_user to handle hashing and insertion
-            $this->register_user($admin_data); 
-            // error_log("Initial Admin created: admin_jeany / admin123");
+        $this->db->table($this->table);
+        if (!empty($q)) {
+            $this->db->group_start()
+                    ->or_like('fname', $q)
+                    ->or_like('lname', $q)
+                    ->or_like('email', $q)
+                    ->group_end();
         }
-
-        // 2. Check and create sample student records
-        $student_count = $this->db->table('students')->get()->num_rows();
-
-        if ($student_count === 0) {
-            $sample_students = [
-                ['fname' => 'Maria', 'lname' => 'Dela Cruz', 'email' => 'maria.dela.cruz@school.ph'],
-                ['fname' => 'Juan', 'lname' => 'Luna', 'email' => 'juan.luna@school.ph'],
-                ['fname' => 'Jose', 'lname' => 'Rizal', 'email' => 'jose.rizal@school.ph'],
-            ];
-
-            foreach ($sample_students as $student) {
-                $this->db->table('students')->insert($student);
-            }
-            // error_log("Sample students created.");
-        }
+        
+        // ⭐️ FINAL FIX: Execute the query and count the resulting array manually.
+        $results = $this->db->get_all(); 
+        return count($results); 
     }
 
-    // ========================================================
-    // STUDENT CRUD OPERATIONS
-    // ========================================================
-
-    public function get_all_students($q = '', $limit = 5, $page = 1)
+    public function count_all_users()
     {
-        $offset = ($page - 1) * $limit;
-        $total_records = 0;
-        
-        // --- COUNT LOGIC ---
-        $count_query = $this->db->table('students');
-        if (!empty($q)) {
-            $search_q = '%' . $q . '%';
-            // Use group_start/group_end for clean grouping of OR conditions
-            $count_query->group_start(); 
-            $count_query->or_like('fname', $search_q);
-            $count_query->or_like('lname', $search_q);
-            $count_query->or_like('email', $search_q);
-            $count_query->group_end();
-        }
-        $total_records = $count_query->get()->num_rows();
+        $this->db->table($this->table);
+        // ⭐️ FINAL FIX: Execute the query and count the resulting array manually.
+        $results = $this->db->get_all(); 
+        return count($results); 
+    }
 
-        
-        // --- FETCH LOGIC (Separate Query) ---
-        $fetch_query = $this->db->table('students');
-        if (!empty($q)) {
-            $search_q = '%' . $q . '%';
-            $fetch_query->group_start();
-            $fetch_query->or_like('fname', $search_q);
-            $fetch_query->or_like('lname', $search_q);
-            $fetch_query->or_like('email', $search_q);
-            $fetch_query->group_end();
-        }
+    // --- CRUD and Login/Register Methods ---
 
-        // Apply pagination and order
-        $records = $fetch_query->limit($limit, $offset)->order_by('id', 'desc')->get()->result_array();
+    public function register_user($data)
+    {
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        return $this->db->table($this->table)
+                        ->insert($data)
+                        ->exec();
+    }
 
-        $total_pages = ceil($total_records / $limit);
-        $pagination = $this->generate_pagination($total_pages, $page, $q);
-
-        return [
-            'records' => $records,
-            'pagination' => $pagination
-        ];
+    public function get_user_by_username($username)
+    {
+        return $this->db->table($this->table)
+                        ->where('username', $username)
+                        ->get();
     }
 
     public function get_student_by_id($id)
     {
-        return $this->db->table('students')->where('id', $id)->get()->row_array();
+        return $this->db->table($this->table)
+                        ->where('id', $id)
+                        ->get();
     }
 
     public function add_student($data)
     {
-        return $this->db->table('students')->insert($data);
+        $data['role'] = 'student'; 
+        if (!isset($data['username'])) $data['username'] = strtolower($data['fname'] . rand(10, 99));
+        if (!isset($data['password'])) $data['password'] = password_hash('default123', PASSWORD_DEFAULT); 
+
+        return $this->db->table($this->table)
+                        ->insert($data)
+                        ->exec();
     }
 
     public function update_student($id, $data)
     {
-        return $this->db->table('students')->where('id', $id)->update($data);
+        return $this->db->table($this->table)
+                        ->where('id', $id)
+                        ->update($data)
+                        ->exec();
     }
 
     public function delete_student($id)
     {
-        return $this->db->table('students')->where('id', $id)->delete();
+        return $this->db->table($this->table)
+                        ->where('id', $id)
+                        ->delete()
+                        ->exec();
     }
 
-    // ========================================================
-    // USER AUTHENTICATION
-    // ========================================================
-    
-    // Removed count_all_users as the count logic is now direct in initialize_data()
+    // --- Pagination Method with Fixes ---
 
-    public function get_user_by_username($username)
+    /**
+     * Retrieves all students with search and MANUAL pagination support.
+     * @param string $q Search query.
+     * @param int $records_per_page
+     * @param int $page Current page number.
+     * @return array Contains 'records' and 'pagination_html'.
+     */
+    public function get_all_students($q = '', $records_per_page = 5, $page = 1)
     {
-        return $this->db->table('users')->where('username', $username)->get()->row_array();
-    }
+        try {
+            // 1. Count Total Records (uses the reliable count_students function)
+            $total_records = $this->count_students($q);
+            $total_pages = ceil($total_records / $records_per_page);
+            $offset = ($page - 1) * $records_per_page;
+            
+            // 2. Build the query for the current page records
+            $this->db->table($this->table);
+            
+            if (!empty($q)) {
+                $this->db->group_start()
+                        ->or_like('fname', $q)
+                        ->or_like('lname', $q)
+                        ->or_like('email', $q)
+                        ->group_end();
+            }
 
-    public function register_user($data)
-    {
-        // Ensure role defaults to 'admin' if not explicitly set (for registration form)
-        $data['role'] = $data['role'] ?? 'admin'; 
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        return $this->db->table('users')->insert($data);
-    }
+            // Manual LIMIT and OFFSET
+            $this->db->order_by('id', 'DESC');
+            $this->db->limit($records_per_page, $offset);
+            $records = $this->db->get_all();
+            
+            // 3. Generate Pagination HTML manually
+            $pagination_html = '';
+            if ($total_pages > 1) {
+                // Determine base URL (including search query 'q')
+                $base_url = site_url('users/index') . '?';
+                if (!empty($q)) {
+                    $base_url .= 'q=' . urlencode($q) . '&';
+                }
 
-    // ========================================================
-    // PAGINATION HELPER
-    // ========================================================
+                $pagination_html .= '<div class="flex space-x-2">';
+                
+                // Previous page link
+                if ($page > 1) {
+                    $pagination_html .= '<a class="hp-page" href="' . $base_url . 'page=' . ($page - 1) . '">Previous</a>';
+                }
 
-    private function generate_pagination($total_pages, $current_page, $q)
-    {
-        $output = '<nav class="flex items-center space-x-2">';
-        $base_url = site_url('users/index');
+                // Page numbers
+                for ($i = 1; $i <= $total_pages; $i++) {
+                    if ($i == $page) {
+                        $pagination_html .= '<span class="hp-current">' . $i . '</span>';
+                    } else {
+                        $pagination_html .= '<a class="hp-page" href="' . $base_url . 'page=' . $i . '">' . $i . '</a>';
+                    }
+                }
 
-        // Previous button
-        $prev_disabled = ($current_page <= 1) ? 'opacity-50 cursor-not-allowed' : '';
-        $prev_page = max(1, $current_page - 1);
-        $prev_link = $base_url . '?page=' . $prev_page . (!empty($q) ? '&q=' . urlencode($q) : '');
-        $output .= "<a href='{$prev_link}' class='px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 {$prev_disabled}'>Previous</a>";
+                // Next page link
+                if ($page < $total_pages) {
+                    $pagination_html .= '<a class="hp-page" href="' . $base_url . 'page=' . ($page + 1) . '">Next</a>';
+                }
+                $pagination_html .= '</div>';
+            }
+            
+            // 4. Return the result
+            return [
+                'records' => $records ?: [],
+                'pagination' => $pagination_html
+            ];
 
-        // Page numbers
-        $start = max(1, $current_page - 2);
-        $end = min($total_pages, $current_page + 2);
-
-        for ($i = $start; $i <= $end; $i++) {
-            $active_class = ($i == $current_page) ? 'bg-blue-600 text-white' : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-100';
-            $link = $base_url . '?page=' . $i . (!empty($q) ? '&q=' . urlencode($q) : '');
-            $output .= "<a href='{$link}' class='px-3 py-1 text-sm font-medium rounded-lg {$active_class}'>{$i}</a>";
+        } catch (Exception $e) {
+             log_message('error', 'Database Error in get_all_students: ' . $e->getMessage());
+             return [
+                'records' => [],
+                'pagination' => ''
+            ];
         }
-        
-        if ($total_pages > $end) {
-            $output .= '<span class="px-3 py-1 text-sm text-gray-500">...</span>';
-            $last_link = $base_url . '?page=' . $total_pages . (!empty($q) ? '&q=' . urlencode($q) : '');
-            $output .= "<a href='{$last_link}' class='px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100'>{$total_pages}</a>";
-        }
-
-        // Next button
-        $next_disabled = ($current_page >= $total_pages) ? 'opacity-50 cursor-not-allowed' : '';
-        $next_page = min($total_pages, $current_page + 1);
-        $next_link = $base_url . '?page=' . $next_page . (!empty($q) ? '&q=' . urlencode($q) : '');
-        $output .= "<a href='{$next_link}' class='px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 {$next_disabled}'>Next</a>";
-
-        $output .= '</nav>';
-        return $output;
     }
 }
