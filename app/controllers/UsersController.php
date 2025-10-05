@@ -6,7 +6,11 @@ class UsersController extends Controller {
     {
         parent::__construct();
         $this->call->model('UsersModel');
-        session_start();
+
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
     // LOGIN
