@@ -7,21 +7,39 @@ class UsersController extends Controller {
         parent::__construct();
         $this->call->model('UsersModel');
 
-        // ✅ Ensure session is started without error
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
 
-    /* ===========================
-       🔐 AUTHENTICATION SECTION
-    =========================== */
+    /**
+     * Helper to check if the current user is logged in and has an 'admin' role.
+     * Use this to protect Admin-only routes.
+     * @return bool
+     */
+    private function check_admin()
+    {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+            echo "Access denied. Only administrators can perform this action.";
+            return false;
+        }
+        return true;
+    }
 
-    // 🧾 Register new user
+    /* 🔐 AUTHENTICATION SECTION */
+
+    // 🧾 Register new user (Only allowed if no user exists yet - First User is Admin)
     public function register()
     {
         if (isset($_SESSION['user'])) {
             redirect(site_url('/'));
+        }
+
+        $user_count = $this->UsersModel->count_all();
+
+        if ($user_count > 0) {
+            echo "Registration is currently closed. An administrator account has already been set up. Please log in.";
+            return;
         }
 
         if ($this->io->method() === 'post') {
@@ -30,7 +48,7 @@ class UsersController extends Controller {
             $fname = trim($this->io->post('fname'));
             $lname = trim($this->io->post('lname'));
             $email = trim($this->io->post('email'));
-            $role = 'user';
+            $role = 'admin';
 
             if (empty($username) || empty($password) || empty($fname) || empty($lname) || empty($email)) {
                 echo "All fields are required.";
@@ -107,23 +125,25 @@ class UsersController extends Controller {
         $this->call->view('users/dashboard', $data);
     }
 
-    // 👑 Admin-only section
+    // 👑 Admin-only section example
     public function admin_only()
     {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-            echo "Access denied.";
+        if (!$this->check_admin()) {
             return;
         }
 
         echo "Welcome Admin!";
     }
 
-    /* ===========================
-       📋 ORIGINAL CRUD SECTION
-    =========================== */
+    /* 📋 ORIGINAL CRUD SECTION */
 
     public function index()
     {
+        $is_admin = isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
+        $is_logged_in = isset($_SESSION['user']);
+        $data['is_admin'] = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+
         $page = isset($_GET['page']) ? $this->io->get('page') : 1;
         $q = isset($_GET['q']) ? trim($this->io->get('q')) : '';
 
@@ -149,12 +169,16 @@ class UsersController extends Controller {
 
     function create()
     {
+        if (!$this->check_admin()) {
+            return;
+        }
+
         if ($this->io->method() == 'post') {
             $data = [
                 'fname' => $this->io->post('fname'),
                 'lname' => $this->io->post('lname'),
                 'email' => $this->io->post('email'),
-                // NOTE: Add username/password if needed
+                // Add username/password if needed
             ];
 
             if ($this->UsersModel->insert($data)) {
@@ -169,6 +193,10 @@ class UsersController extends Controller {
 
     function update($id)
     {
+        if (!$this->check_admin()) {
+            return;
+        }
+
         $user = $this->UsersModel->find($id);
         if (!$user) {
             echo "User not found.";
@@ -195,6 +223,10 @@ class UsersController extends Controller {
 
     function delete($id)
     {
+        if (!$this->check_admin()) {
+            return;
+        }
+
         if ($this->UsersModel->delete($id)) {
             redirect(site_url('/'));
         } else {
