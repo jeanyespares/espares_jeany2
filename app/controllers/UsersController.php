@@ -7,14 +7,13 @@ class UsersController extends Controller {
         parent::__construct();
         $this->call->model('UsersModel');
 
-        // Start session if not already started
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
     }
 
     // LOGIN
-    function login() {
+    public function login() {
         if ($this->io->method() == 'post') {
             $username = $this->io->post('username');
             $password = $this->io->post('password');
@@ -32,14 +31,13 @@ class UsersController extends Controller {
     }
 
     // LOGOUT
-    function logout() {
+    public function logout() {
         session_destroy();
         redirect(site_url('users/login'));
     }
 
-    // PROTECTED INDEX
-    public function index()
-    {
+    // INDEX (protected)
+    public function index() {
         if (!isset($_SESSION['user'])) {
             redirect(site_url('users/login'));
         }
@@ -69,22 +67,14 @@ class UsersController extends Controller {
         ]);
 
         $this->pagination->set_theme('default');
-
-        $this->pagination->initialize(
-            $total_rows,
-            $records_per_page,
-            $page,
-            site_url() . '?q=' . urlencode($q)
-        );
+        $this->pagination->initialize($total_rows, $records_per_page, $page, site_url() . '?q=' . urlencode($q));
         $data['page'] = $this->pagination->paginate();
 
         $this->call->view('users/index', $data);
     }
 
-    function create() {
-        if (!isset($_SESSION['user'])) {
-            redirect(site_url('users/login'));
-        }
+    public function create() {
+        if (!isset($_SESSION['user'])) redirect(site_url('users/login'));
 
         if ($this->io->method() == 'post') {
             $data = [
@@ -96,23 +86,18 @@ class UsersController extends Controller {
             if ($this->UsersModel->insert($data)) {
                 redirect(site_url());
             } else {
-                echo "Error in creating user.";
+                echo "Error creating user.";
             }
         } else {
             $this->call->view('users/create');
         }
     }
 
-    function update($id) {
-        if (!isset($_SESSION['user'])) {
-            redirect(site_url('users/login'));
-        }
+    public function update($id) {
+        if (!isset($_SESSION['user'])) redirect(site_url('users/login'));
 
         $user = $this->UsersModel->find($id);
-        if (!$user) {
-            echo "User not found.";
-            return;
-        }
+        if (!$user) { echo "User not found."; return; }
 
         if ($this->io->method() == 'post') {
             $data = [
@@ -121,26 +106,18 @@ class UsersController extends Controller {
                 'email' => $this->io->post('email')
             ];
 
-            if ($this->UsersModel->update($id, $data)) {
-                redirect(site_url());
-            } else {
-                echo "Error in updating information.";
-            }
+            if ($this->UsersModel->update($id, $data)) redirect(site_url());
+            else echo "Error updating user.";
         } else {
             $data['user'] = $user;
             $this->call->view('users/update', $data);
         }
     }
 
-    function delete($id) {
-        if (!isset($_SESSION['user'])) {
-            redirect(site_url('users/login'));
-        }
+    public function delete($id) {
+        if (!isset($_SESSION['user'])) redirect(site_url('users/login'));
 
-        if ($this->UsersModel->delete($id)) {
-            redirect(site_url());
-        } else {
-            echo "Error in deleting user.";
-        }
+        if ($this->UsersModel->delete($id)) redirect(site_url());
+        else echo "Error deleting user.";
     }
 }

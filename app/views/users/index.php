@@ -27,11 +27,14 @@
         <i class="fa-solid fa-sparkles"></i> Registered BSIT Students 💖
       </h1>
 
+      <!-- Logout -->
       <?php if(isset($_SESSION['user'])): ?>
-        <a href="<?=site_url('users/logout')?>"
-           class="btn-hover bg-red-500 text-white px-4 py-2 rounded-2xl shadow hover:bg-red-600 transition-all">
-          Logout
-        </a>
+        <div class="flex items-center gap-4">
+          <span class="text-white font-semibold">Welcome, <?= $_SESSION['user'] ?></span>
+          <a href="<?=site_url('users/logout')?>" class="btn-hover bg-red-500 text-white px-4 py-2 rounded-2xl shadow hover:bg-red-600 transition-all">
+            Logout
+          </a>
+        </div>
       <?php endif; ?>
     </div>
   </nav>
@@ -39,19 +42,31 @@
   <!-- Content -->
   <div class="max-w-6xl mx-auto mt-10 px-4">
     <div class="bg-white shadow-2xl rounded-3xl p-6 border-4 border-pink-200">
+
+      <!-- Top Actions -->
       <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+
+        <!-- Search Bar -->
         <form method="get" action="<?=site_url()?>" class="flex">
-          <input type="text" name="q" value="<?=html_escape($_GET['q'] ?? '')?>" placeholder="🔍 Search student..." class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
+          <input 
+            type="text" 
+            name="q" 
+            value="<?=html_escape($_GET['q'] ?? '')?>" 
+            placeholder="🔍 Search student..." 
+            class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
           <button type="submit" class="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-r-2xl shadow transition-all duration-300">
             <i class="fa fa-search"></i>
           </button>
         </form>
 
-        <a href="<?=site_url('users/create')?>" class="btn-hover inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white font-bold px-5 py-2 rounded-2xl shadow-md transition-all duration-300">
+        <!-- Add Button -->
+        <a href="<?=site_url('users/create')?>"
+           class="btn-hover inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white font-bold px-5 py-2 rounded-2xl shadow-md transition-all duration-300">
           <i class="fa-solid fa-user-plus"></i> Add Student
         </a>
       </div>
 
+      <!-- Table -->
       <div class="overflow-x-auto rounded-3xl border-4 border-pink-200 shadow-md">
         <table class="w-full text-center border-collapse">
           <thead>
@@ -88,6 +103,7 @@
         </table>
       </div>
 
+      <!-- Pagination -->
       <div class="mt-6 flex justify-center">
         <div class="pagination flex space-x-2">
           <?php
