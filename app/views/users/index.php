@@ -97,6 +97,7 @@
           <i class="fa-solid fa-user-plus"></i> Add Student
         </a>
         <?php endif; ?>
+        
       </div>
 
       <!-- Table -->
@@ -144,21 +145,9 @@
 
       <!-- Pagination -->
       <div class="mt-6 flex justify-center">
-        <div class="pagination flex space-x-2">
-          <?php
-            if (!empty($page)) {
-              echo str_replace(
-                ['<a ', '<strong>', '</strong>'],
-                [
-                  '<a class="hp-page"',
-                  '<span class="hp-current">',
-                  '</span>'
-                ],
-                $page
-              );
-            }
-          ?>
-        </div>
+        <?php if (!empty($pagination)): ?>
+            <?= $pagination ?>
+        <?php endif; ?>
       </div>
 
     </div>
