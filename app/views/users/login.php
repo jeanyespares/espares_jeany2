@@ -38,9 +38,6 @@
       </button>
     </form>
 
-    <p class="mt-4 text-center text-gray-500 text-sm">
-      Use <strong>Username:</strong> jeany | <strong>Password:</strong> jeany21
-    </p>
   </div>
 
 </body>
