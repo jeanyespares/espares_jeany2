@@ -1,7 +1,7 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-require_once '../models/users_model.php'; // Make sure path is correct
+require_once '../models/UsersModel.php';
 
 class UsersController extends Controller { 
     
