@@ -10,13 +10,14 @@ class UsersController extends Controller
         parent::__construct(); 
 
         // Load the UsersModel to interact with the database. 
-        // Changed 'Users_model' to 'UsersModel' to match the class name in the model file.
         $this->call->model('UsersModel');
 
         // Load necessary helpers 
         $this->call->helper('url');
         $this->call->helper('session');
         $this->call->helper('input');
+        // ⭐ THE NEW FIX: Loading the 'form' helper, where is_post_request() is commonly defined.
+        $this->call->helper('form');
     }
 
     /**
