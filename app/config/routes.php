@@ -1,49 +1,55 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
-/**
- * ------------------------------------------------------------------
- * LavaLust - an opensource lightweight PHP MVC Framework
- * ------------------------------------------------------------------
- *
- * MIT License
- *
- * Copyright (c) 2020 Ronald M. Marasigan
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @package LavaLust
- * @author Ronald M. Marasigan <ronald.marasigan@yahoo.com>
- * @since Version 1
- * @link https://github.com/ronmarasigan/LavaLust
- * @license https://opensource.org/licenses/MIT MIT License
- */
 
 /*
 | -------------------------------------------------------------------
 | URI ROUTING
 | -------------------------------------------------------------------
-| Here is where you can register web routes for your application.
-|
-|
 */
 
-$router->get('/', 'UsersController::index');
+// ===============================================
+// AUTHENTICATION & AUTHORIZATION ROUTES
+// ===============================================
+
+// 1. LOGIN
+// GET: Maglo-load ng login form (tatawagin ang UsersController::login() sa GET request)
+$router->get('/users/login', 'UsersController::login'); 
+// POST: Magpo-process ng form submission (tatawagin ang UsersController::login() sa POST request)
+// Note: Sa Controller mo, ang iisang login() method ang humahawak sa GET at POST.
+$router->post('/users/login', 'UsersController::login'); 
+
+// 2. REGISTER
+// GET: Maglo-load ng register form (tatawagin ang UsersController::register() sa GET request)
+$router->get('/users/register', 'UsersController::register');
+// POST: Magpo-process ng form submission (tatawagin ang UsersController::register() sa POST request)
+// Note: Sa Controller mo, ang iisang register() method ang humahawak sa GET at POST.
+$router->post('/users/register', 'UsersController::register'); 
+
+// 3. LOGOUT
+$router->get('/users/logout', 'UsersController::logout');
+
+// 4. PROTECTED PAGES
+// DASHBOARD: Ito ang pupuntahan after successful login
+$router->get('/users/dashboard', 'UsersController::dashboard');
+// ADMIN ONLY: Sample admin route
+$router->get('/users/admin_only', 'UsersController::admin_only');
+
+// ===============================================
+// ORIGINAL CRUD ROUTES (Student Directory)
+// ===============================================
+
+// INDEX/HOME: Ito ang Student Directory (Users List)
+// Pinalitan ko ang '/' route para hindi ito ang default, para makita mo ang login.
+// Pero kung gusto mo pa rin itong maging home, pwede mo siyang ibalik sa $router->get('/', 'UsersController::index');
+$router->get('/users/index', 'UsersController::index');
+// Ginamit ko ang root route (/) para mag-redirect sa login page.
+$router->get('/', 'UsersController::login'); // **NEW: Redirect root to login**
+
+// CREATE
 $router->match('/users/create', 'UsersController::create', ['GET', 'POST']);
+
+// UPDATE
 $router->match('/users/update/{id}', 'UsersController::update', ['GET', 'POST']);
+
+// DELETE
 $router->get('/users/delete/{id}', 'UsersController::delete');
