@@ -7,162 +7,142 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Dancing+Script:wght=700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="<?=base_url();?>/public/style.css">
-
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe);
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe, #dbeafe);
     }
-    .font-title {
-      font-family: 'Dancing Script', cursive;
+    .font-title { 
+      font-family: 'Dancing Script', cursive; 
     }
-    .btn-hover:hover {
-      transform: scale(1.07) rotate(-1deg);
-      box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff;
+    .btn-hover:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     }
-    table thead tr {
-      background: linear-gradient(90deg, #f472b6, #ec4899, #d946ef);
-    }
-    .hp-page {
-      padding: 6px 12px;
-      background: #f9a8d4;
-      border-radius: 9999px;
-      color: white;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    .hp-page:hover {
-      background: #f472b6;
-      transform: scale(1.1);
-    }
-    .hp-current {
-      padding: 6px 12px;
-      background: #d946ef;
-      border-radius: 9999px;
-      color: white;
-      font-weight: bold;
+    table { 
+      border-collapse: separate; 
+      border-spacing: 0 10px; 
     }
   </style>
 </head>
-<body class="min-h-screen">
+<body class="p-4 md:p-10">
 
-<?php 
-    $is_logged_in = isset($_SESSION['user']);
-    $is_admin = $is_logged_in && $_SESSION['user']['role'] === 'admin';
-?>
-
-  <nav class="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 shadow-lg border-b-4 border-pink-300">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <h1 class="text-white font-title text-3xl flex items-center gap-2">
-        <i class="fa-solid fa-sparkles"></i> Registered BSIT Students 💖
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- HEADER AND NAVIGATION -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-8 p-4 bg-white rounded-xl shadow-lg border-b-4 border-blue-400">
+      <h1 class="text-4xl font-title text-blue-600 mb-4 sm:mb-0">
+        <i class="fa-solid fa-users"></i> Student Directory
       </h1>
-
-      <div class="flex items-center space-x-4">
+      
+      <!-- AUTH LINKS -->
+      <div class="flex space-x-2">
         <?php if ($is_logged_in): ?>
-          <span class="text-white text-lg font-semibold flex items-center gap-2">
-            <i class="fa-solid fa-user-circle"></i> Hello, <?= html_escape($_SESSION['user']['username']) ?>!
-          </span>
-          <a href="<?= site_url('users/logout') ?>"
-             class="btn-hover bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
+          <a href="<?= site_url('users/dashboard') ?>" class="btn-hover bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+            <i class="fa-solid fa-tachometer-alt"></i> Dashboard
+          </a>
+          <a href="<?= site_url('users/logout') ?>" class="btn-hover bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
             <i class="fa-solid fa-sign-out-alt"></i> Logout
           </a>
         <?php else: ?>
-          <a href="<?= site_url('users/login') ?>"
-             class="btn-hover bg-pink-300 hover:bg-pink-400 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1">
-            <i class="fa-solid fa-sign-in-alt"></i> Login
+          <a href="<?= site_url('users/login') ?>" class="btn-hover bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+            <i class="fa-solid fa-sign-in-alt"></i> Admin Login
+          </a>
+          <a href="<?= site_url('users/register') ?>" class="btn-hover bg-purple-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+            <i class="fa-solid fa-user-plus"></i> Register Admin
           </a>
         <?php endif; ?>
       </div>
     </div>
-  </nav>
 
-  <div class="max-w-6xl mx-auto mt-10 px-4">
-    <div class="bg-white shadow-2xl rounded-3xl p-6 border-4 border-pink-200">
-
-      <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-        <form method="get" action="<?=site_url('users/index')?>" class="flex">
-          <input
-            type="text"
-            name="q"
-            value="<?=html_escape($_GET['q'] ?? '')?>"
-            placeholder="🔍 Search student..."
-            class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
-          <button type="submit" class="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-r-2xl shadow transition-all duration-300">
-            <i class="fa fa-search"></i>
-          </button>
-        </form>
-
-        <?php if ($is_admin): ?>
-        <a href="<?=site_url('users/create')?>"
-           class="btn-hover inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white font-bold px-5 py-2 rounded-2xl shadow-md transition-all duration-300">
-          <i class="fa-solid fa-user-plus"></i> Add Student
-        </a>
-        <?php endif; ?>
+    <!-- FLASH MESSAGES -->
+    <?php if (isset($_SESSION['flashdata']['success'])): ?>
+      <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-lg" role="alert">
+        <p class="font-bold">Success!</p>
+        <p><?= $_SESSION['flashdata']['success'] ?></p>
       </div>
+      <?php unset($_SESSION['flashdata']['success']); ?>
+    <?php endif; ?>
 
-      <div class="overflow-x-auto rounded-3xl border-4 border-pink-200 shadow-md">
-        <table class="w-full text-center border-collapse">
-          <thead>
-            <tr class="text-white uppercase tracking-wider text-lg">
-              <th class="py-3 px-4">ID</th>
-              <th class="py-3 px-4">Firstname</th>
-              <th class="py-3 px-4">Lastname</th>
-              <th class="py-3 px-4">Email</th>
-              <?php if ($is_admin): ?>
-              <th class="py-3 px-4">Action</th>
-              <?php endif; ?>
-            </tr>
-          </thead>
-          <tbody class="text-gray-700 text-base">
-            <?php if(!empty($users)): ?>
-              <?php foreach(html_escape($users) as $user): ?>
-                <tr class="hover:bg-pink-100 transition duration-200">
-                  <td class="py-3 px-4 font-medium"><?=($user['id']);?></td>
-                  <td class="py-3 px-4"><?=($user['fname']);?></td>
-                  <td class="py-3 px-4"><?=($user['lname']);?></td>
-                  <td class="py-3 px-4"><?=($user['email']);?></td>
-                  <?php if ($is_admin): ?>
-                  <td class="py-3 px-4 flex justify-center gap-3">
-                    <a href="<?=site_url('users/update/'.$user['id']);?>"
-                       class="btn-hover bg-green-400 hover:bg-green-500 text-white px-3 py-1 rounded-xl shadow flex items-center gap-1">
-                      <i class="fa-solid fa-pen-to-square"></i> Update
+    <?php if (isset($_SESSION['flashdata']['error'])): ?>
+      <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg" role="alert">
+        <p class="font-bold">Error!</p>
+        <p><?= $_SESSION['flashdata']['error'] ?></p>
+      </div>
+      <?php unset($_SESSION['flashdata']['error']); ?>
+    <?php endif; ?>
+
+    <!-- SEARCH AND ADD BUTTON -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+      
+      <!-- Search Form -->
+      <form method="GET" action="<?= site_url('/') ?>" class="w-full md:w-1/2">
+        <div class="relative flex items-center">
+          <input type="text" name="q" placeholder="Search by name or email..." value="<?= html_escape($q) ?>"
+             class="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition duration-300">
+          <i class="fa-solid fa-search absolute left-3 text-gray-400"></i>
+        </div>
+      </form>
+      
+      <!-- ADD NEW STUDENT BUTTON (ADMIN ONLY) -->
+      <?php if ($is_admin): ?>
+        <a href="<?= site_url('users/create') ?>"
+            class="btn-hover w-full md:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-2 px-6 rounded-xl shadow-md transition duration-300 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus-circle"></i> Add New Student
+        </a>
+      <?php endif; ?>
+    </div>
+    
+    <!-- STUDENT TABLE -->
+    <div class="overflow-x-auto shadow-2xl rounded-2xl border-4 border-blue-100 bg-white">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-blue-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider rounded-tl-xl">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Full Name</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
+            <?php if ($is_admin): ?>
+              <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider rounded-tr-xl">Actions</th>
+            <?php endif; ?>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+          <?php if (!empty($users)): ?>
+            <?php foreach ($users as $user): ?>
+              <tr class="hover:bg-blue-50 transition duration-150 ease-in-out">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?= html_escape($user['id']) ?></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><?= html_escape($user['fname'] . ' ' . $user['lname']) ?></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 font-medium"><?= html_escape($user['email']) ?></td>
+                
+                <?php if ($is_admin): ?>
+                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <a href="<?= site_url('users/update/' . $user['id']) ?>" class="text-indigo-600 hover:text-indigo-900 mx-2 transition duration-150">
+                      <i class="fa-solid fa-edit"></i> Edit
                     </a>
-                    <a href="<?=site_url('users/delete/'.$user['id']);?>"
-                       class="btn-hover bg-red-400 hover:bg-red-500 text-white px-3 py-1 rounded-xl shadow flex items-center gap-1">
-                      <i class="fa-solid fa-trash"></i> Delete
+                    <a href="<?= site_url('users/delete/' . $user['id']) ?>" class="text-red-600 hover:text-red-900 mx-2 transition duration-150"
+                      onclick="return confirm('Are you sure you want to delete this student?')">
+                      <i class="fa-solid fa-trash-alt"></i> Delete
                     </a>
                   </td>
-                  <?php endif; ?>
-                </tr>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <tr><td colspan="<?= $is_admin ? 5 : 4 ?>" class="py-4 text-gray-500">No students found 😿</td></tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="mt-6 flex justify-center">
-        <div class="pagination flex space-x-2">
-          <?php
-            if (!empty($pagination)) {
-              echo str_replace(
-                ['<a ', '<strong>', '</strong>'],
-                [
-                  '<a class="hp-page"',     
-                  '<span class="hp-current">',  
-                  '</span>'
-                ],
-                $pagination
-              );
-            }
-          ?>
-        </div>
-      </div>
-
+                <?php endif; ?>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="<?= $is_admin ? 4 : 3 ?>" class="px-6 py-8 text-center text-gray-500">
+                No student records found.
+              </td>
+            </tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
     </div>
-  </div>
 
+    <!-- PAGINATION -->
+    <div class="mt-6 flex justify-center">
+      <?= $pagination ?>
+    </div>
+
+  </div>
 </body>
 </html>

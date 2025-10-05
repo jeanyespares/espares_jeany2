@@ -1,7 +1,6 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-// FALLBACK: Defines is_post_request() if the framework helper doesn't load it
 if (!function_exists('is_post_request')) {
     function is_post_request() {
         return $_SERVER['REQUEST_METHOD'] === 'POST';
@@ -10,10 +9,6 @@ if (!function_exists('is_post_request')) {
 
 class UsersController extends Controller
 {
-    /**
-     * UsersController constructor.
-     * Loads necessary models and helpers.
-     */
     public function __construct()
     {
         parent::__construct(); 
@@ -29,10 +24,15 @@ class UsersController extends Controller
         return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
     }
 
+    private function is_logged_in()
+    {
+        return isset($_SESSION['user']);
+    }
+
     public function index()
     {
         $data['is_admin'] = $this->is_admin();
-        $data['is_logged_in'] = isset($_SESSION['user']);
+        $data['is_logged_in'] = $this->is_logged_in();
 
         $q = isset($_GET['q']) ? $this->io->get('q') : '';
         $page = isset($_GET['page']) ? $this->io->get('page') : 1; 
@@ -47,7 +47,7 @@ class UsersController extends Controller
 
     public function create()
     {
-        if (!$this->is_admin()) redirect(site_url('users/index'));
+        if (!$this->is_admin()) redirect(site_url('users/index')); 
 
         if (is_post_request()) {
             $data = [
@@ -68,7 +68,7 @@ class UsersController extends Controller
 
     public function update($id = null)
     {
-        if (!$this->is_admin()) redirect(site_url('users/index'));
+        if (!$this->is_admin()) redirect(site_url('users/index')); 
 
         if (is_post_request()) {
             $data = [
@@ -93,7 +93,7 @@ class UsersController extends Controller
 
     public function delete($id = null)
     {
-        if (!$this->is_admin()) redirect(site_url('users/index'));
+        if (!$this->is_admin()) redirect(site_url('users/index')); 
 
         if ($this->UsersModel->delete_student($id)) {
             $this->session->set_flashdata('success', 'Student deleted successfully.');
@@ -101,6 +101,29 @@ class UsersController extends Controller
             $this->session->set_flashdata('error', 'Failed to delete student.');
         }
         redirect(site_url('users/index'));
+    }
+
+    public function dashboard()
+    {
+        if (!$this->is_logged_in()) {
+            $this->session->set_flashdata('error', 'You must be logged in to view the dashboard.');
+            redirect(site_url('users/login'));
+        }
+
+        $data['username'] = $_SESSION['user']['username'];
+        $data['role'] = $_SESSION['user']['role'];
+        
+        $this->call->view('users/dashboard', $data);
+    }
+
+    public function admin_only()
+    {
+        if (!$this->is_admin()) {
+            $this->session->set_flashdata('error', 'Access denied. Administrator privileges required.');
+            redirect(site_url('users/index'));
+        }
+        $data['user'] = $_SESSION['user'];
+        $this->call->view('users/admin_only_page', $data);
     }
 
     public function register()
@@ -158,7 +181,7 @@ class UsersController extends Controller
                         'username' => $user['username'],
                         'role' => $user['role'], 
                     ];
-                    redirect(site_url('users/index'));
+                    redirect(site_url('users/dashboard'));
                 } else {
                     $data['error'] = 'Invalid username or password.';
                 }
