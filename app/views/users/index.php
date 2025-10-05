@@ -1,105 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Student Directory</title>
-    <style>
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
-        .container { padding: 20px; }
-        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .btn { padding: 5px 10px; text-decoration: none; color: white; border-radius: 3px; margin-left: 5px; font-size: 0.9em; }
-        .btn-primary { background-color: #007bff; }
-        .btn-secondary { background-color: #6c757d; }
-        .btn-danger { background-color: #dc3545; }
-        .btn-success { background-color: #28a745; }
-        .btn-info { background-color: #17a2b8; }
-        .text-muted { color: #6c757d; font-style: italic; }
-        .alert-success { background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 15px; border: 1px solid #c3e6cb; }
-        .alert-error { background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Directory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="<?=base_url();?>/public/style.css">
+
+  <style>
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe);
+    }
+    .font-title { 
+      font-family: 'Dancing Script', cursive; 
+    }
+    .btn-hover:hover { 
+      transform: scale(1.07) rotate(-1deg); 
+      box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff; 
+    }
+    table thead tr { background: linear-gradient(90deg, #f472b6, #ec4899, #d946ef); }
+    .hp-page { 
+      padding: 6px 12px; 
+      background: #f9a8d4; 
+      border-radius: 9999px; 
+      color: white; 
+      font-weight: bold; 
+      transition: 0.3s; 
+    }
+    .hp-page:hover { background: #f472b6; transform: scale(1.1); }
+    .hp-current { 
+      padding: 6px 12px; 
+      background: #d946ef; 
+      border-radius: 9999px; 
+      color: white; 
+      font-weight: bold; 
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-<div class="header">
-    <h1>Registered BSIT Students 💖</h1>
-    
-    <div class="auth-buttons">
-        <?php if ($is_logged_in): ?>
-            <span style="margin-right: 15px;">Welcome, <?= html_escape($this->session->userdata('user')['username']) ?>!</span>
-            <a href="<?= site_url('users/logout') ?>" class="btn btn-danger">Logout</a> 
-        <?php else: ?>
-            <a href="<?= site_url('users/login') ?>" class="btn btn-primary">Login</a>
-            <a href="<?= site_url('users/register') ?>" class="btn btn-secondary">Register</a>
-        <?php endif; ?>
+  <!-- Header -->
+  <nav class="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 shadow-lg border-b-4 border-pink-300">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-white font-title text-3xl flex items-center gap-2">
+        <i class="fa-solid fa-sparkles"></i> Registered BSIT Students 💖
+      </h1>
     </div>
-</div>
+  </nav>
 
-<div class="container">
-    
-    <?php if ($this->session->flashdata('success')): ?>
-        <div class="alert-success">
-            <?= $this->session->flashdata('success') ?>
-        </div>
-    <?php endif; ?>
-    <?php if ($this->session->flashdata('error')): ?>
-        <div class="alert-error">
-            <?= $this->session->flashdata('error') ?>
-        </div>
-    <?php endif; ?>
+  <!-- Content -->
+  <div class="max-w-6xl mx-auto mt-10 px-4">
+    <div class="bg-white shadow-2xl rounded-3xl p-6 border-4 border-pink-200">
 
-    <div class="controls-row">
-        <form method="get" action="<?= site_url('users/index') ?>" class="search-form" style="display: flex;">
-            <input type="text" name="q" placeholder="Search student..." value="<?= html_escape($q) ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
-            <button type="submit" class="btn btn-secondary" style="margin-left: 5px;">Search</button>
+      <!-- Top Actions -->
+      <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+
+        <!-- Search Bar -->
+        <form method="get" action="<?=site_url()?>" class="flex">
+          <input 
+            type="text" 
+            name="q" 
+            value="<?=html_escape($_GET['q'] ?? '')?>" 
+            placeholder="🔍 Search student..." 
+            class="px-4 py-2 border-2 border-pink-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 w-64 bg-pink-50 placeholder-gray-400">
+          <button type="submit" class="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-r-2xl shadow transition-all duration-300">
+            <i class="fa fa-search"></i>
+          </button>
         </form>
 
-        <?php if ($is_admin): ?>
-            <a href="<?= site_url('users/create') ?>" class="btn btn-success">
-                + Add Student
-            </a>
-        <?php endif; ?>
-    </div>
-    
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>FIRSTNAME</th>
-                <th>LASTNAME</th>
-                <th>EMAIL</th>
-                <th>ACTION</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($users)): ?>
-                <?php foreach ($users as $user): ?>
-                <tr>
-                    <td><?= html_escape($user['id']) ?></td>
-                    <td><?= html_escape($user['fname']) ?></td>
-                    <td><?= html_escape($user['lname']) ?></td>
-                    <td><?= html_escape($user['email']) ?></td>
-                    
-                    <td>
-                        <?php if ($is_admin): ?>
-                            <a href="<?= site_url('users/update/' . $user['id']) ?>" class="btn btn-sm btn-info">Update</a>
-                            <a href="<?= site_url('users/delete/' . $user['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
-                        <?php else: ?>
-                            <span class="text-muted">View Only</span>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr><td colspan="5">No students found.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+        <!-- Add Button -->
+        <a href="<?=site_url('users/create')?>"
+           class="btn-hover inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white font-bold px-5 py-2 rounded-2xl shadow-md transition-all duration-300">
+          <i class="fa-solid fa-user-plus"></i> Add Student
+        </a>
+      </div>
 
-    <div class="pagination" style="margin-top: 20px; text-align: center;">
-        <?= $pagination ?>
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-3xl border-4 border-pink-200 shadow-md">
+        <table class="w-full text-center border-collapse">
+          <thead>
+            <tr class="text-white uppercase tracking-wider text-lg">
+              <th class="py-3 px-4">ID</th>
+              <th class="py-3 px-4">Firstname</th>
+              <th class="py-3 px-4">Lastname</th>
+              <th class="py-3 px-4">Email</th>
+              <th class="py-3 px-4">Action</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700 text-base">
+            <?php if(!empty($users)): ?>
+              <?php foreach(html_escape($users) as $user): ?>
+                <tr class="hover:bg-pink-100 transition duration-200">
+                  <td class="py-3 px-4 font-medium"><?=($user['id']);?></td>
+                  <td class="py-3 px-4"><?=($user['fname']);?></td>
+                  <td class="py-3 px-4"><?=($user['lname']);?></td>
+                  <td class="py-3 px-4"><?=($user['email']);?></td>
+                  <td class="py-3 px-4 flex justify-center gap-3">
+                    <a href="<?=site_url('users/update/'.$user['id']);?>"
+                       class="btn-hover bg-green-400 hover:bg-green-500 text-white px-3 py-1 rounded-xl shadow flex items-center gap-1">
+                      <i class="fa-solid fa-pen-to-square"></i> Update
+                    </a>
+                    <a href="<?=site_url('users/delete/'.$user['id']);?>"
+                       class="btn-hover bg-red-400 hover:bg-red-500 text-white px-3 py-1 rounded-xl shadow flex items-center gap-1">
+                      <i class="fa-solid fa-trash"></i> Delete
+                    </a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <tr><td colspan="5" class="py-4 text-gray-500">No students found 😿</td></tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-6 flex justify-center">
+        <div class="pagination flex space-x-2">
+          <?php
+            if (!empty($page)) {
+              echo str_replace(
+                ['<a ', '<strong>', '</strong>'],
+                [
+                  '<a class="hp-page"',     
+                  '<span class="hp-current">',  
+                  '</span>'
+                ],
+                $page
+              );
+            }
+          ?>
+        </div>
+      </div>
+
     </div>
-</div>
+  </div>
 
 </body>
 </html>

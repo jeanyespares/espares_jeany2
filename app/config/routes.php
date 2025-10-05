@@ -1,47 +1,49 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
-
 /**
  * ------------------------------------------------------------------
- * URI ROUTING
+ * LavaLust - an opensource lightweight PHP MVC Framework
  * ------------------------------------------------------------------
- * Defines all routes for Student Directory (CRUD) and User Authentication.
+ *
+ * MIT License
+ *
+ * Copyright (c) 2020 Ronald M. Marasigan
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package LavaLust
+ * @author Ronald M. Marasigan <ronald.marasigan@yahoo.com>
+ * @since Version 1
+ * @link https://github.com/ronmarasigan/LavaLust
+ * @license https://opensource.org/licenses/MIT MIT License
  */
 
-// ===============================================
-// CORE CRUD ROUTES (Student Directory)
-// ===============================================
+/*
+| -------------------------------------------------------------------
+| URI ROUTING
+| -------------------------------------------------------------------
+| Here is where you can register web routes for your application.
+|
+|
+*/
 
-// INDEX/HOME: Main student directory list (Root URL)
-$router->get('/', 'UsersController::index'); 
-
-// CREATE: Handles both GET (form display) and POST (submission)
+$router->get('/', 'UsersController::index');
 $router->match('/users/create', 'UsersController::create', ['GET', 'POST']);
-
-// UPDATE: Handles both GET (form display) and POST (submission)
 $router->match('/users/update/{id}', 'UsersController::update', ['GET', 'POST']);
-
-// DELETE
 $router->get('/users/delete/{id}', 'UsersController::delete');
-
-// Fallback index route
-$router->get('/users/index', 'UsersController::index'); 
-
-// ===============================================
-// AUTHENTICATION & AUTHORIZATION ROUTES
-// ===============================================
-
-// LOGIN: Handles both GET (form display) and POST (authentication logic)
-$router->match('/users/login', 'UsersController::login', ['GET', 'POST']); 
-
-// REGISTER: Handles both GET (form display) and POST (user creation logic)
-$router->match('/users/register', 'UsersController::register', ['GET', 'POST']);
-
-// LOGOUT
-$router->get('/users/logout', 'UsersController::logout'); 
-
-// DASHBOARD (Protected Area - still needed for the link in index.php)
-$router->get('/users/dashboard', 'UsersController::dashboard');
-
-// ADMIN ONLY (Protected Area Example)
-$router->get('/users/admin_only', 'UsersController::admin_only');
