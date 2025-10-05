@@ -3,36 +3,20 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 class UsersController extends Controller { 
     
-    // Walang __construct() para iwasan ang error. Ipapasa ang burden sa bawat method.
-
-    /**
-     * Tinitiyak na naka-load ang model at resources.
-     * Ito ay tatawagin sa simula ng bawat function.
-     */
-    private function load_resources() {
-        // I-check kung naka-load na ang model sa standard property name
-        if (!isset($this->users_model)) {
-            // Dahil sa error, i-assume natin na gumagana ang $this->model->load,
-            // at automatic na sine-set ng framework ang $this->users_model
-            // at hindi ang manual $this->model->users_model
-            $this->model->load('users_model');
-            
-            // I-load ang libraries/helpers bago gamitin
-            $this->call->library('session');
-            $this->call->helper('url'); 
-        }
-    }
+    // Walang __construct()
+    // Walang local properties para i-store ang model
+    
+    // Ang lahat ng model/library/helper loading ay ilalagay natin DIREKTA sa index()
 
     // --- Helper function for checking admin status ---
+    // Aasahan natin na ang session ay handa na bago tawagin ito
     private function is_admin() {
-        // Hindi na kailangan i-load ang resources dito, dahil ang public methods 
-        // na tumatawag dito (tulad ng index) ang gagawa.
         return $this->session->has_userdata('user') && $this->session->userdata('user')['role'] === 'admin';
     }
 
     // --- Helper function for redirecting if not admin ---
     private function check_admin() {
-        // Tiyakin na ang public method na tumatawag dito ay nag-load muna ng resources.
+        // Aasahan na ang site_url() at session ay na-load na ng function na tumawag
         if (!$this->is_admin()) {
             $this->session->set_flashdata('error', 'Access Denied. Admin privilege required.');
             redirect(site_url('users/index')); 
@@ -45,12 +29,15 @@ class UsersController extends Controller {
 
     /*** Main Index page (Student Directory) */
     public function index() {
-        $this->load_resources(); // 👈 Load resources FIRST!
+        // Tanging dito lang tayo maglo-load ng resources
+        $this->model->load('users_model'); // 👈 Dito lang tayo mag-lo-load
+        $this->call->library('session'); 
+        $this->call->helper('url'); 
         
         $q = $this->io->get('q');
         $page = $this->io->get('page') ?? 1;
 
-        // Gamitin ang standard property name: $this->users_model
+        // Gagamitin ang standard property na dapat ay sinet ng framework:
         $results = $this->users_model->get_all_students($q, 5, $page);
 
         $data['users'] = $results['records']; 
@@ -64,7 +51,9 @@ class UsersController extends Controller {
     }
 
     public function login() {
-        $this->load_resources(); // 👈 Load resources FIRST!
+        $this->model->load('users_model'); // 👈 Dito lang tayo mag-lo-load
+        $this->call->library('session'); 
+        $this->call->helper('url'); 
         
         if ($this->session->has_userdata('user')) {
             redirect(site_url('users/index')); 
@@ -92,8 +81,10 @@ class UsersController extends Controller {
     }
 
     public function register() {
-        $this->load_resources(); // 👈 Load resources FIRST!
-        
+        $this->model->load('users_model'); // 👈 Dito lang tayo mag-lo-load
+        $this->call->library('session'); 
+        $this->call->helper('url'); 
+
         if ($this->io->post()) {
             $data = [
                 'username' => $this->io->post('username'),
@@ -116,8 +107,9 @@ class UsersController extends Controller {
     }
 
     public function logout() {
-        $this->load_resources(); // 👈 Load resources FIRST!
-        
+        $this->call->library('session'); // Load session for logout
+        $this->call->helper('url'); // Load helper for redirect
+
         $this->session->unset_userdata('user');
         $this->session->sess_destroy();
         $this->session->set_flashdata('success', 'You have been logged out.');
@@ -129,7 +121,9 @@ class UsersController extends Controller {
     // ========================================================
 
     public function create() {
-        $this->load_resources(); // 👈 Load resources FIRST!
+        $this->model->load('users_model'); // 👈 Dito lang tayo mag-lo-load
+        $this->call->library('session'); 
+        $this->call->helper('url'); 
         $this->check_admin();
 
         if ($this->io->post()) {
@@ -150,7 +144,9 @@ class UsersController extends Controller {
     }
 
     public function update($id) {
-        $this->load_resources(); // 👈 Load resources FIRST!
+        $this->model->load('users_model'); // 👈 Dito lang tayo mag-lo-load
+        $this->call->library('session'); 
+        $this->call->helper('url'); 
         $this->check_admin();
 
         $data['student'] = $this->users_model->get_student_by_id($id);
@@ -177,7 +173,9 @@ class UsersController extends Controller {
     }
 
     public function delete($id) {
-        $this->load_resources(); // 👈 Load resources FIRST!
+        $this->model->load('users_model'); // 👈 Dito lang tayo mag-lo-load
+        $this->call->library('session'); 
+        $this->call->helper('url'); 
         $this->check_admin();
 
         if ($this->users_model->delete_student($id)) {
