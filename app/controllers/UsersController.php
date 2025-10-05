@@ -34,8 +34,10 @@ class UsersController extends Controller {
         }
     }
 
+    // ===================== PUBLIC METHODS =====================
+
     public function index() {
-        $q = $this->io->get('q');
+        $q = $this->io->get('q') ?? '';
         $page = $this->io->get('page') ?? 1;
 
         $results = $this->users_model_instance->get_all_students($q, 5, $page);
@@ -105,6 +107,8 @@ class UsersController extends Controller {
         $this->session->set_flashdata('success', 'You have been logged out.');
         redirect(site_url('users/login'));
     }
+
+    // ===================== CRUD OPERATIONS =====================
 
     public function create() {
         $this->check_admin();
