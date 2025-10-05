@@ -72,17 +72,13 @@ class UsersModel extends Model {
        ✏️ CRUD OPERATIONS
     =========================== */
 
-    public function insert($data)
-    {
-        return $this->db->table($this->table)->insert($data);
-    }
+    public function find($id, $with_deleted = false)
+{
+    return $this->db->table($this->table)
+                    ->where($this->primary_key, $id)
+                    ->get();
+}
 
-    public function find($id)
-    {
-        return $this->db->table($this->table)
-                        ->where($this->primary_key, $id)
-                        ->get();
-    }
 
     public function update($id, $data)
     {
