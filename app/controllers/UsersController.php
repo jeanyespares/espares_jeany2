@@ -17,7 +17,6 @@ class UsersController extends Controller
     public function __construct()
     {
         parent::__construct(); 
-        
         $this->call->model('UsersModel');
         $this->call->helper('url');
         $this->call->helper('session');
@@ -32,18 +31,13 @@ class UsersController extends Controller
 
     public function index()
     {
-        $is_admin = $this->is_admin();
-        $is_logged_in = isset($_SESSION['user']);
-        
-        $data['is_admin'] = $is_admin;
-        $data['is_logged_in'] = $is_logged_in;
+        $data['is_admin'] = $this->is_admin();
+        $data['is_logged_in'] = isset($_SESSION['user']);
 
         $q = isset($_GET['q']) ? $this->io->get('q') : '';
         $page = isset($_GET['page']) ? $this->io->get('page') : 1; 
 
-        $records_per_page = 5;
-        $results = $this->UsersModel->get_all_students($q, $records_per_page, $page);
-
+        $results = $this->UsersModel->get_all_students($q, 5, $page);
         $data['users'] = $results['records'];
         $data['pagination'] = $results['pagination'];
         $data['q'] = $q;
@@ -112,10 +106,8 @@ class UsersController extends Controller
     public function register()
     {
         $total_users = $this->UsersModel->count_all_users();
-        
         if ($total_users > 0) {
-            $data['error'] = 'Registration is currently closed. Only one admin user is allowed.';
-            $this->session->set_flashdata('error', $data['error']);
+            $this->session->set_flashdata('error', 'Registration is currently closed. Only one admin user is allowed.');
             redirect(site_url('users/login'));
         }
 
@@ -129,11 +121,10 @@ class UsersController extends Controller
             } elseif ($this->UsersModel->get_user_by_username($username)) {
                 $data['error'] = 'Username already exists.';
             } else {
-                $role = 'admin'; 
                 $admin_data = [
                     'username' => $username,
                     'password' => $password, 
-                    'role' => $role,
+                    'role' => 'admin',
                     'fname' => 'Jeany', 
                     'lname' => 'Admin',
                     'email' => 'jeany.admin@example.com' 
@@ -152,8 +143,7 @@ class UsersController extends Controller
 
     public function login()
     {
-        $data = [];
-        $data['error'] = '';
+        $data = ['error' => ''];
         if (is_post_request()) {
             $username = trim($this->io->post('username')); 
             $password = $this->io->post('password');
@@ -162,7 +152,6 @@ class UsersController extends Controller
                 $data['error'] = 'Username and password are required.';
             } else {
                 $user = $this->UsersModel->get_user_by_username($username);
-
                 if ($user && password_verify($password, $user['password'])) {
                     $_SESSION['user'] = [
                         'id' => $user['id'],
