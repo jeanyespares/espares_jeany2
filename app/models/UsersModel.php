@@ -19,52 +19,73 @@ class UsersModel extends Model {
     /* ===========================
        🔎 PAGINATION + SEARCH
     =========================== */
-    public function page($q = '', $records_per_page = null, $page = null)
+
+    public function get_all_users($page = 1, $per_page = 10, $q = '')
     {
-        if (is_null($page)) {
-            return [
-                'total_rows' => $this->db->table($this->table)->count_all(),
-                'records'    => $this->db->table($this->table)->get_all()
-            ];
-        } else {
-            $query = $this->db->table($this->table);
+        $query = $this->db->table($this->table);
 
-            if (!empty($q)) {
-                $query->where("id LIKE '%{$q}%' 
-                            OR fname LIKE '%{$q}%' 
-                            OR lname LIKE '%{$q}%' 
-                            OR email LIKE '%{$q}%' 
-                            OR username LIKE '%{$q}%'");
-            }
-
-            // Count total rows
-            $countQuery = clone $query;
-            $data['total_rows'] = $countQuery->select_count('*', 'count')->get()['count'];
-
-            // Fetch paginated records
-            $data['records'] = $query->pagination($records_per_page, $page)->get_all();
-
-            return $data;
+        if (!empty($q)) {
+            $query->where("id LIKE '%{$q}%' 
+                           OR fname LIKE '%{$q}%' 
+                           OR lname LIKE '%{$q}%' 
+                           OR email LIKE '%{$q}%' 
+                           OR username LIKE '%{$q}%'");
         }
+
+        $countQuery = clone $query;
+        $total_rows = $countQuery->select_count('*', 'count')->get()['count'];
+
+        $records = $query->pagination($per_page, $page)->get_all();
+
+        $pagination_html = $this->generate_pagination_links($total_rows, $per_page, $page, $q);
+
+        return [
+            'users' => $records,
+            'pagination' => $pagination_html
+        ];
+    }
+
+    private function generate_pagination_links($total_rows, $per_page, $current_page, $q)
+    {
+        $total_pages = ceil($total_rows / $per_page);
+        $html = '';
+
+        if ($total_pages > 1) {
+            for ($i = 1; $i <= $total_pages; $i++) {
+                $url = site_url("users/index?page={$i}") . (!empty($q) ? "&q={$q}" : '');
+                if ($i == $current_page) {
+                    $html .= "<strong>{$i}</strong>";
+                } else {
+                    $html .= "<a href='{$url}'>{$i}</a>";
+                }
+            }
+        }
+        return $html;
     }
 
     /* ===========================
        🔐 AUTHENTICATION HELPERS
     =========================== */
 
-    // 🔎 Get user by username (used for login)
-    public function get_by_username($username)
+    public function count_all_users()
+    {
+        return $this->db->table($this->table)->count_all();
+    }
+
+    public function get_user_by_username($username)
     {
         return $this->db->table($this->table)
                         ->where('username', $username)
                         ->get();
     }
 
-    // ➕ Register new user (optional separate method)
-    public function register_user($data)
+    public function register_user($username, $password, $role)
     {
-        // Hash password before insert
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        $data = [
+            'username' => $username,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'role' => $role
+        ];
         return $this->db->table($this->table)->insert($data);
     }
 
@@ -72,22 +93,26 @@ class UsersModel extends Model {
        ✏️ CRUD OPERATIONS
     =========================== */
 
-    public function find($id, $with_deleted = false)
-{
-    return $this->db->table($this->table)
-                    ->where($this->primary_key, $id)
-                    ->get();
-}
+    public function add_student($data)
+    {
+        return $this->db->table($this->table)->insert($data);
+    }
 
+    public function get_student_by_id($id)
+    {
+        return $this->db->table($this->table)
+                        ->where($this->primary_key, $id)
+                        ->get();
+    }
 
-    public function update($id, $data)
+    public function update_student($id, $data)
     {
         return $this->db->table($this->table)
                         ->where($this->primary_key, $id)
                         ->update($data);
     }
 
-    public function delete($id)
+    public function delete_student($id)
     {
         return $this->db->table($this->table)
                         ->where($this->primary_key, $id)

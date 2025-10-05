@@ -6,10 +6,13 @@ class UsersController extends Controller
 {
     public function __construct()
     {
+        // ⭐ THE FIX: Call the parent constructor first to initialize framework dependencies like $this->call
+        parent::__construct(); 
+
         // Load the Users_model to interact with the database
         $this->call->model('Users_model');
 
-        // Load necessary helpers (assuming they are standard framework helpers)
+        // Load necessary helpers 
         $this->call->helper('url');
         $this->call->helper('session');
         $this->call->helper('input');
@@ -26,28 +29,22 @@ class UsersController extends Controller
 
     /**
      * Displays the student directory list (Index page).
-     * Passes role information to the view for conditional element display.
      */
     public function index()
     {
         $data = [];
-
-        // ⭐ NEW: Pass login status and role to the view (users/index)
         $data['is_admin'] = $this->is_admin();
         $data['is_logged_in'] = isset($_SESSION['user']);
 
-        // --- Pagination and Search Logic ---
         $page = (int)($_GET['page'] ?? 1);
         $per_page = 10;
         $search_query = html_escape($_GET['q'] ?? '');
 
-        // Fetch students and pagination links (Assuming Users_model::get_all_users exists)
         $result = $this->Users_model->get_all_users($page, $per_page, $search_query);
 
         $data['users'] = $result['users'];
         $data['page'] = $result['pagination'];
 
-        // Render the view
         $this->call->view('users/index', $data);
     }
 
@@ -60,8 +57,7 @@ class UsersController extends Controller
             redirect('users/index');
         }
 
-        $data = [];
-        $data['error'] = '';
+        $data = ['error' => ''];
 
         if (is_post_request()) {
             $username = post('username');
@@ -90,7 +86,6 @@ class UsersController extends Controller
 
     /**
      * Handles user registration.
-     * ⭐ IMPORTANT: Only the first user registered is allowed (and is set as 'admin').
      */
     public function register()
     {
@@ -98,8 +93,7 @@ class UsersController extends Controller
             redirect('users/login');
         }
 
-        $data = [];
-        $data['error'] = '';
+        $data = ['error' => ''];
 
         if (is_post_request()) {
             $username = post('username');
@@ -122,16 +116,16 @@ class UsersController extends Controller
         $this->call->view('users/register', $data);
     }
 
-    // --- Student Management Functions (Admin Only) ---
-
+    /**
+     * Displays the form to add a new student. (Admin Only)
+     */
     public function create()
     {
         if (!$this->is_admin()) {
             redirect('users/index');
         }
 
-        $data = [];
-        $data['error'] = '';
+        $data = ['error' => ''];
 
         if (is_post_request()) {
             $fname = post('fname');
@@ -148,6 +142,9 @@ class UsersController extends Controller
         $this->call->view('users/create', $data);
     }
 
+    /**
+     * Displays the form to update an existing student. (Admin Only)
+     */
     public function update($id)
     {
         if (!$this->is_admin()) {
@@ -178,6 +175,9 @@ class UsersController extends Controller
         $this->call->view('users/update', $data);
     }
 
+    /**
+     * Deletes a student record. (Admin Only)
+     */
     public function delete($id)
     {
         if (!$this->is_admin()) {
@@ -189,11 +189,12 @@ class UsersController extends Controller
         redirect('users/index');
     }
 
+    /**
+     * Logs out the user.
+     */
     public function logout()
     {
         session_destroy();
         redirect('users/index');
     }
-
-    // The dashboard() method has been removed as per request.
 }
