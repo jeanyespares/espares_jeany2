@@ -47,11 +47,7 @@
 </head>
 <body class="min-h-screen">
 
-<?php 
-    $is_logged_in = isset($_SESSION['user']);
-    $is_admin = $is_logged_in && $_SESSION['user']['role'] === 'admin';
-?>
-
+  <!-- Header -->
   <nav class="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 shadow-lg border-b-4 border-pink-300">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <h1 class="text-white font-title text-3xl flex items-center gap-2">
@@ -77,9 +73,11 @@
     </div>
   </nav>
 
+  <!-- Content -->
   <div class="max-w-6xl mx-auto mt-10 px-4">
     <div class="bg-white shadow-2xl rounded-3xl p-6 border-4 border-pink-200">
 
+      <!-- Top Actions -->
       <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
         <form method="get" action="<?=site_url('users/index')?>" class="flex">
           <input
@@ -101,6 +99,7 @@
         <?php endif; ?>
       </div>
 
+      <!-- Table -->
       <div class="overflow-x-auto rounded-3xl border-4 border-pink-200 shadow-md">
         <table class="w-full text-center border-collapse">
           <thead>
@@ -143,18 +142,19 @@
         </table>
       </div>
 
+      <!-- Pagination -->
       <div class="mt-6 flex justify-center">
         <div class="pagination flex space-x-2">
           <?php
-            if (!empty($pagination)) {
+            if (!empty($page)) {
               echo str_replace(
                 ['<a ', '<strong>', '</strong>'],
                 [
-                  '<a class="hp-page"',     
-                  '<span class="hp-current">',  
+                  '<a class="hp-page"',
+                  '<span class="hp-current">',
                   '</span>'
                 ],
-                $pagination
+                $page
               );
             }
           ?>
