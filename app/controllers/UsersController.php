@@ -1,68 +1,61 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
+require_once '../models/users_model.php'; // Make sure path is correct
+
 class UsersController extends Controller { 
     
-    // Gagamitin natin ito para i-store ang UsersModel instance
-    protected $users_model_instance; 
+    protected $users_model_instance; // Store Users_model instance
 
     public function __construct() {
-        // HULI NA ANG PAGGAMIT NG PARENT CONSTRUCTOR, HINDI ITO DAPAT TANGGALIN
-        parent::__construct(); 
+        parent::__construct();
+        $this->initialize_resources();
     }
 
     /**
-     * Initializes all resources by prioritizing CALL before MODEL.
+     * Initialize libraries, helpers, and model instance
      */
     private function initialize_resources() {
         if (isset($this->users_model_instance)) {
             return;
         }
-        
-        // --- STEP 1: LOAD LIBRARIES/HELPERS (Baka ito ang kailangan mauna) ---
-        // Aasahan natin na ang $this->call ay mas handa kaysa $this->model
+
+        // --- LOAD LIBRARIES / HELPERS ---
         $this->call->library('session');
-        $this->call->helper('url'); 
-        
-        // --- STEP 2: LOAD MODEL AND STORE ITS INSTANCE ---
-        // Ito ang linya na nagbibigay ng error, kaya dapat ito ang HULI
-        $this->model->load('users_model');
-        
-        // Manual na kunin ang instance (users_model)
-        $this->users_model_instance = $this->model->users_model;
+        $this->call->helper('url');
+
+        // --- LOAD MODEL ---
+        $this->users_model_instance = new Users_model();
     }
 
-    // --- Helper function for checking admin status ---
+    /**
+     * Check if current user is admin
+     */
     private function is_admin() {
         return $this->session->has_userdata('user') && $this->session->userdata('user')['role'] === 'admin';
     }
 
-    // --- Helper function for redirecting if not admin ---
+    /**
+     * Redirect if not admin
+     */
     private function check_admin() {
         if (!$this->is_admin()) {
             $this->session->set_flashdata('error', 'Access Denied. Admin privilege required.');
-            redirect(site_url('users/index')); 
+            redirect(site_url('users/index'));
         }
     }
 
-    // ========================================================
-    // PUBLIC METHODS
-    // ========================================================
+    // ===================== PUBLIC METHODS =====================
 
-    /*** Main Index page (Student Directory) */
     public function index() {
-        $this->initialize_resources(); // 👈 Load resources FIRST!
-        
         $q = $this->io->get('q');
         $page = $this->io->get('page') ?? 1;
 
-        // Gamitin ang $this->users_model_instance
         $results = $this->users_model_instance->get_all_students($q, 5, $page);
 
-        $data['users'] = $results['records']; 
-        $data['pagination'] = $results['pagination']; 
+        $data['users'] = $results['records'];
+        $data['pagination'] = $results['pagination'];
         $data['q'] = $q;
-
         $data['is_logged_in'] = $this->session->has_userdata('user');
         $data['is_admin'] = $this->is_admin();
 
@@ -70,10 +63,8 @@ class UsersController extends Controller {
     }
 
     public function login() {
-        $this->initialize_resources(); // 👈 Load resources FIRST!
-        
         if ($this->session->has_userdata('user')) {
-            redirect(site_url('users/index')); 
+            redirect(site_url('users/index'));
         }
 
         if ($this->io->post()) {
@@ -88,18 +79,17 @@ class UsersController extends Controller {
                     'role' => $user['role']
                 ]);
                 $this->session->set_flashdata('success', 'Login successful.');
-                redirect(site_url('users/index')); 
+                redirect(site_url('users/index'));
             } else {
                 $this->session->set_flashdata('error', 'Invalid username or password.');
                 redirect(site_url('users/login'));
             }
         }
+
         $this->call->view('users/login');
     }
 
     public function register() {
-        $this->initialize_resources(); // 👈 Load resources FIRST!
-        
         if ($this->io->post()) {
             $data = [
                 'username' => $this->io->post('username'),
@@ -107,7 +97,7 @@ class UsersController extends Controller {
                 'fname' => $this->io->post('fname'),
                 'lname' => $this->io->post('lname'),
                 'email' => $this->io->post('email'),
-                'role' => 'admin' 
+                'role' => 'admin'
             ];
 
             if ($this->users_model_instance->register_user($data)) {
@@ -118,24 +108,20 @@ class UsersController extends Controller {
                 redirect(site_url('users/register'));
             }
         }
+
         $this->call->view('users/register');
     }
 
     public function logout() {
-        $this->initialize_resources(); // 👈 Load resources FIRST!
-        
         $this->session->unset_userdata('user');
         $this->session->sess_destroy();
         $this->session->set_flashdata('success', 'You have been logged out.');
         redirect(site_url('users/login'));
     }
 
-    // ========================================================
-    // CRUD OPERATIONS (Admin only)
-    // ========================================================
+    // ===================== CRUD OPERATIONS =====================
 
     public function create() {
-        $this->initialize_resources(); // 👈 Load resources FIRST!
         $this->check_admin();
 
         if ($this->io->post()) {
@@ -147,22 +133,22 @@ class UsersController extends Controller {
 
             if ($this->users_model_instance->add_student($data)) {
                 $this->session->set_flashdata('success', 'Student added successfully!');
-                redirect(site_url('users/index')); 
+                redirect(site_url('users/index'));
             } else {
                 $this->session->set_flashdata('error', 'Failed to add student.');
             }
         }
+
         $this->call->view('users/create_student');
     }
 
     public function update($id) {
-        $this->initialize_resources(); // 👈 Load resources FIRST!
         $this->check_admin();
 
         $data['student'] = $this->users_model_instance->get_student_by_id($id);
         if (!$data['student']) {
             $this->session->set_flashdata('error', 'Student not found.');
-            redirect(site_url('users/index')); 
+            redirect(site_url('users/index'));
         }
 
         if ($this->io->post()) {
@@ -174,16 +160,16 @@ class UsersController extends Controller {
 
             if ($this->users_model_instance->update_student($id, $update_data)) {
                 $this->session->set_flashdata('success', 'Student record updated successfully!');
-                redirect(site_url('users/index')); 
+                redirect(site_url('users/index'));
             } else {
                 $this->session->set_flashdata('error', 'Failed to update student record.');
             }
         }
+
         $this->call->view('users/update_student', $data);
     }
 
     public function delete($id) {
-        $this->initialize_resources(); // 👈 Load resources FIRST!
         $this->check_admin();
 
         if ($this->users_model_instance->delete_student($id)) {
@@ -192,6 +178,6 @@ class UsersController extends Controller {
             $this->session->set_flashdata('error', 'Failed to delete student record.');
         }
 
-        redirect(site_url('users/index')); 
+        redirect(site_url('users/index'));
     }
 }
