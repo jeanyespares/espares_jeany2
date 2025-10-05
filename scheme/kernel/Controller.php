@@ -81,14 +81,7 @@ class Controller
 		if (array_key_exists($prop, $this->properties)) {
 			return $this->properties[$prop];
 		} else {
-			// Attempt to lazy-load commonly requested libraries/models/etc.
-			try {
-				$loaded = load_class($prop);
-				$this->properties[$prop] = $loaded;
-				return $this->properties[$prop];
-			} catch (Exception $e) {
-				throw new Exception("Property $prop does not exist");
-			}
+			throw new Exception("Property $prop does not exist");
 		}
 	}
 
@@ -97,21 +90,17 @@ class Controller
 	 */
 	public function __construct()
 	{
-		// Set instance first
-		self::$instance = $this;
+		$this->before_action();
 
-		// Initialize invoker and autoloaded classes so they are available
-		// during before_action in child controllers
-		$this->call =& load_class('invoker', 'kernel');
-		$this->call->initialize();
+		self::$instance = $this;
 
 		foreach (loaded_class() as $var => $class)
 		{
 			$this->properties[$var] =& load_class($class);
 		}
 
-		// Now call the controller hook
-		$this->before_action();
+		$this->call =& load_class('invoker', 'kernel');
+		$this->call->initialize();
 	}
 
 	/**
