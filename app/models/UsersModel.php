@@ -1,3 +1,4 @@
+```php
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
@@ -10,17 +11,21 @@ class UsersModel extends Model
     public function __construct()
     {
         parent::__construct();
-        $this->initialize_data(); // Calls the function to check and insert initial data
+        // Call the initialization logic once the Model and DB are ready
+        $this->initialize_data(); 
     }
 
     /**
      * Initializes the database with an Admin user and sample students
-     * if the tables are empty.
+     * if the tables are empty. This is for ensuring the app is runnable immediately.
      */
     private function initialize_data()
     {
         // 1. Check and create the Admin user (if no users exist)
-        if ($this->count_all_users() === 0) {
+        // Direct count check using a fresh query to avoid previous query conflicts.
+        $user_count = $this->db->table('users')->get()->num_rows();
+
+        if ($user_count === 0) {
             $admin_data = [
                 'username' => 'admin_jeany',
                 'password' => 'admin123', // This will be hashed in register_user
@@ -29,12 +34,15 @@ class UsersModel extends Model
                 'lname' => 'Admin',
                 'email' => 'jeany.admin@example.com' 
             ];
-            $this->register_user($admin_data);
-            error_log("Initial Admin created: admin_jeany / admin123");
+            // Use register_user to handle hashing and insertion
+            $this->register_user($admin_data); 
+            // error_log("Initial Admin created: admin_jeany / admin123");
         }
 
         // 2. Check and create sample student records
-        if ($this->db->table('students')->get()->num_rows() === 0) {
+        $student_count = $this->db->table('students')->get()->num_rows();
+
+        if ($student_count === 0) {
             $sample_students = [
                 ['fname' => 'Maria', 'lname' => 'Dela Cruz', 'email' => 'maria.dela.cruz@school.ph'],
                 ['fname' => 'Juan', 'lname' => 'Luna', 'email' => 'juan.luna@school.ph'],
@@ -44,7 +52,7 @@ class UsersModel extends Model
             foreach ($sample_students as $student) {
                 $this->db->table('students')->insert($student);
             }
-            error_log("Sample students created.");
+            // error_log("Sample students created.");
         }
     }
 
@@ -57,32 +65,33 @@ class UsersModel extends Model
         $offset = ($page - 1) * $limit;
         $total_records = 0;
         
-        $this->db->table('students');
-
+        // --- COUNT LOGIC ---
+        $count_query = $this->db->table('students');
         if (!empty($q)) {
             $search_q = '%' . $q . '%';
-            $this->db->or_like('fname', $search_q);
-            $this->db->or_like('lname', $search_q);
-            $this->db->or_like('email', $search_q);
-            
-            // Count only search results
-            $total_records = $this->db->get()->num_rows();
-            
-            // Re-initialize query for data fetch
-            $this->db->table('students');
-            $this->db->or_like('fname', $search_q);
-            $this->db->or_like('lname', $search_q);
-            $this->db->or_like('email', $search_q);
-        } else {
-            // Count all records if no search query
-            $total_records = $this->db->get()->num_rows();
-            
-            // Re-initialize query for data fetch
-            $this->db->table('students');
+            // Use group_start/group_end for clean grouping of OR conditions
+            $count_query->group_start(); 
+            $count_query->or_like('fname', $search_q);
+            $count_query->or_like('lname', $search_q);
+            $count_query->or_like('email', $search_q);
+            $count_query->group_end();
+        }
+        $total_records = $count_query->get()->num_rows();
+
+        
+        // --- FETCH LOGIC (Separate Query) ---
+        $fetch_query = $this->db->table('students');
+        if (!empty($q)) {
+            $search_q = '%' . $q . '%';
+            $fetch_query->group_start();
+            $fetch_query->or_like('fname', $search_q);
+            $fetch_query->or_like('lname', $search_q);
+            $fetch_query->or_like('email', $search_q);
+            $fetch_query->group_end();
         }
 
-        // Fetch the records for the current page
-        $records = $this->db->limit($limit, $offset)->order_by('id', 'desc')->get()->result_array();
+        // Apply pagination and order
+        $records = $fetch_query->limit($limit, $offset)->order_by('id', 'desc')->get()->result_array();
 
         $total_pages = ceil($total_records / $limit);
         $pagination = $this->generate_pagination($total_pages, $page, $q);
@@ -117,10 +126,7 @@ class UsersModel extends Model
     // USER AUTHENTICATION
     // ========================================================
     
-    public function count_all_users()
-    {
-        return $this->db->table('users')->get()->num_rows();
-    }
+    // Removed count_all_users as the count logic is now direct in initialize_data()
 
     public function get_user_by_username($username)
     {
@@ -129,6 +135,8 @@ class UsersModel extends Model
 
     public function register_user($data)
     {
+        // Ensure role defaults to 'admin' if not explicitly set (for registration form)
+        $data['role'] = $data['role'] ?? 'admin'; 
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         return $this->db->table('users')->insert($data);
     }
