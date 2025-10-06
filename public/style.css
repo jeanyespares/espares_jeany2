@@ -1,32 +1,32 @@
 body {
   margin: 0;
   padding: 20px;
-  font-family: "Garamond", "Times New Roman", serif;
-  background: url('PunkVioletBackground.jpg') no-repeat center center fixed;
-  background-size: cover;
+  font-family: "Poppins", "Garamond", serif;
+  background: linear-gradient(135deg, #fbefff, #f8e8ff, #fce7f3, #e8e0ff);
+  background-attachment: fixed;
   text-align: center;
-  color: #e0d7ff; /* neon violet text */
+  color: #5c3c7a;
 }
 
 h1 {
   margin-top: 40px;
   margin-bottom: 20px;
   font-size: 48px;
-  color: #ff3fff; /* bright neon pink-purple */
-  text-shadow: 2px 2px #8a2be2, 0 0 10px #ff3fff; /* punk glow */
+  color: #b56ce2;
+  text-shadow: 1px 1px 6px #f3c9ff, 0 0 10px #e3a7ff;
 }
 
 .description-box {
-  background: rgba(30, 0, 50, 0.85); /* dark translucent purple */
-  border: 3px solid #ff3fff; /* neon border */
+  background: rgba(255, 255, 255, 0.7);
+  border: 3px solid #d4a5ff;
   border-radius: 16px;
   width: 60%;
   margin: 40px auto;
   padding: 20px;
-  box-shadow: 0 0 25px #9b00ff, 0 0 50px #ff3fff; /* edgy neon glow */
+  box-shadow: 0 0 20px #e3b9ff, 0 0 40px #f7e2ff;
   font-size: 18px;
   line-height: 1.6;
-  color: #e0d7ff;
+  color: #5a3976;
 }
 
 .buttons {
@@ -37,26 +37,28 @@ h1 {
   width: 80%;
   margin: 0 auto;
   border-collapse: collapse;
-  background: rgba(50, 0, 60, 0.9); /* darker table background */
-  box-shadow: 0 0 20px #ff3fff, 0 0 40px #9b00ff;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 25px #f3d4ff, 0 0 50px #e8baff;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .guild-table th,
 .guild-table td {
-  border: 2px solid #ff3fff;
+  border: 1.5px solid #d4a5ff;
   padding: 12px;
   font-size: 18px;
-  color: #e0d7ff;
+  color: #4a2b6c;
 }
 
 .guild-table th {
-  background: #6a0dad; /* deep violet */
-  color: #ff3fff;
-  text-shadow: 0 0 5px #ff3fff;
+  background: linear-gradient(135deg, #e9ceff, #d6b0ff);
+  color: #6b21a8;
+  text-shadow: 0 0 4px #f3c9ff;
 }
 
 .guild-table tr:nth-child(even) {
-  background: rgba(80, 0, 100, 0.8);
+  background: rgba(246, 232, 255, 0.9);
 }
 
 .btn {
@@ -65,61 +67,61 @@ h1 {
   padding: 10px 20px;
   margin: 5px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ff3fff, #9b00ff);
-  color: #fff;
-  border: 2px solid #e000ff;
-  font-weight: bold;
+  background: linear-gradient(135deg, #e0b3ff, #f3c9ff);
+  color: #4a2b6c;
+  border: 2px solid #d8aaff;
+  font-weight: 600;
   transition: 0.3s;
-  box-shadow: 0 0 8px #ff3fff;
+  box-shadow: 0 0 8px #f3d4ff;
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, #e000ff, #ff00ff);
-  transform: scale(1.1) rotate(-2deg);
-  box-shadow: 0 0 20px #ff3fff, 0 0 40px #9b00ff;
+  background: linear-gradient(135deg, #f4d8ff, #e3b8ff);
+  transform: scale(1.08);
+  box-shadow: 0 0 20px #f3d4ff, 0 0 30px #d8aaff;
 }
 
 .btn.danger {
-  background: linear-gradient(135deg, #ff0000, #800080);
-  color: #fff;
-  border-color: #9b00ff;
-  box-shadow: 0 0 10px #ff0000;
+  background: linear-gradient(135deg, #fbb6ce, #fcd2e3);
+  color: #782a46;
+  border-color: #f1a3c0;
+  box-shadow: 0 0 10px #fcb6e1;
 }
 
 .btn.create {
-  background: linear-gradient(135deg, #ff00ff, #8000ff);
-  border-color: #9b00ff;
-  color: #fff;
+  background: linear-gradient(135deg, #e6b6ff, #fcd2ff);
+  border-color: #d8aaff;
+  color: #4a2b6c;
 }
 
 .form-box {
-  background: rgba(30, 0, 50, 0.95);
-  border: 3px solid #ff3fff;
+  background: rgba(255, 255, 255, 0.8);
+  border: 3px solid #d4a5ff;
   border-radius: 16px;
   width: 50%;
   margin: 40px auto;
   padding: 30px;
-  box-shadow: 0 0 25px #ff3fff, 0 0 50px #9b00ff;
+  box-shadow: 0 0 25px #f3d4ff, 0 0 40px #e8baff;
   text-align: center;
 }
 
 .form-box label {
   font-size: 20px;
   font-weight: bold;
-  color: #ff3fff;
-  text-shadow: 0 0 5px #ff3fff;
+  color: #8b5ecf;
+  text-shadow: 0 0 6px #e9ceff;
 }
 
 .form-input {
   width: 70%;
   padding: 8px;
   margin-top: 5px;
-  border: 2px solid #ff3fff;
+  border: 2px solid #d4a5ff;
   border-radius: 8px;
   font-size: 16px;
-  font-family: "Garamond", serif;
-  background: #2b002b;
-  color: #e0d7ff;
+  font-family: "Poppins", serif;
+  background: #f9f5ff;
+  color: #4a2b6c;
 }
 
 .header-row {
@@ -133,11 +135,11 @@ h1 {
 .search {
   padding: 8px 12px;
   border-radius: 8px;
-  border: 2px solid #ff3fff;
+  border: 2px solid #d4a5ff;
   font-size: 16px;
-  font-family: "Garamond", serif;
-  background: #2b002b;
-  color: #e0d7ff;
+  font-family: "Poppins", serif;
+  background: #f9f5ff;
+  color: #4a2b6c;
   height: 36px;
   box-sizing: border-box;
 }
@@ -161,23 +163,23 @@ h1 {
   display: inline-block;
   padding: 10px 20px;
   border-radius: 8px;
-  border: 2px solid #ff3fff;
-  background: linear-gradient(135deg, #ff3fff, #9b00ff);
-  color: #fff;
+  border: 2px solid #d4a5ff;
+  background: linear-gradient(135deg, #f4d8ff, #e8baff);
+  color: #4a2b6c;
   text-decoration: none;
   font-weight: bold;
   transition: 0.3s;
-  box-shadow: 0 0 5px #ff3fff;
+  box-shadow: 0 0 5px #f3d4ff;
 }
 
 .pagination a:hover {
-  background: linear-gradient(135deg, #e000ff, #ff00ff);
-  transform: scale(1.05) rotate(-1deg);
+  background: linear-gradient(135deg, #fdf0ff, #f5dbff);
+  transform: scale(1.05);
 }
 
 .pagination .active {
-  background: linear-gradient(135deg, #ff00ff, #9b00ff);
-  border-color: #e000ff;
-  color: #fff;
-  box-shadow: 0 0 15px #ff3fff, 0 0 30px #9b00ff;
+  background: linear-gradient(135deg, #e6b6ff, #d4a5ff);
+  border-color: #cfa8ff;
+  color: #4a2b6c;
+  box-shadow: 0 0 15px #f3d4ff, 0 0 30px #e3b9ff;
 }

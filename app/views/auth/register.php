@@ -18,7 +18,7 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center">
-
+; 
 <div class="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-sm border-4 border-pink-200 animate-fadeIn">
     <h1 class="text-2xl font-title text-center text-pink-600 mb-6">Create Account</h1>
     
