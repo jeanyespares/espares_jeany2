@@ -1,45 +1,177 @@
-/* Pagination Container */
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: "Garamond", "Times New Roman", serif;
+  background: url('LavenderBackground.jpg') no-repeat center center fixed;
+  background-size: cover;
+  text-align: center;
+  color: #2d1b4e; /* deep violet */
+}
+
+h1 {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-size: 48px;
+  color: #1f1233;
+  text-shadow: 2px 2px #c4b5fd; /* light lavender glow */
+}
+
+.description-box {
+  background: rgba(240, 235, 255, 0.9);
+  border: 3px solid #b197fc;
+  border-radius: 16px;
+  width: 60%;
+  margin: 40px auto;
+  padding: 20px;
+  box-shadow: 0 0 15px #6d28d9;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #2d1b4e;
+}
+
+.buttons {
+  margin-top: 30px;
+}
+
+.guild-table {
+  width: 80%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: rgba(240, 235, 255, 0.9);
+  box-shadow: 0 0 15px #6d28d9;
+}
+
+.guild-table th,
+.guild-table td {
+  border: 2px solid #a78bfa;
+  padding: 12px;
+  font-size: 18px;
+}
+
+.guild-table th {
+  background: #a78bfa;
+  color: #f5f3ff;
+}
+
+.guild-table tr:nth-child(even) {
+  background: rgba(250, 245, 255, 0.8);
+}
+
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+  color: #1f1233;
+  border: 2px solid #6d28d9;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+  transform: scale(1.05);
+}
+
+.btn.danger {
+  background: linear-gradient(135deg, #6b21a8, #4c1d95);
+  color: #fff;
+  border-color: #2e1065;
+}
+
+.btn.create {
+  display: inline-block;
+  margin-top: 20px;
+  background: linear-gradient(135deg, #93c5fd, #3b82f6);
+  border-color: #1e3a8a;
+  color: #fff;
+}
+
+.form-box {
+  background: rgba(240, 235, 255, 0.95);
+  border: 3px solid #a78bfa;
+  border-radius: 16px;
+  width: 50%;
+  margin: 40px auto;
+  padding: 30px;
+  box-shadow: 0 0 15px #6d28d9;
+  text-align: center;
+}
+
+.form-box label {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1f1233;
+}
+
+.form-input {
+  width: 70%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 2px solid #a78bfa;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: "Garamond", serif;
+  background: #f5f3ff;
+  color: #1f1233;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto 20px auto;
+}
+
+.search {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid #6d28d9;
+  font-size: 16px;
+  font-family: "Garamond", serif;
+  background: #f5f3ff;
+  color: #1f1233;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+.header-row .btn {
+  height: 36px;
+  margin-left: 5px;
+  padding: 8px 16px;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 8px; /* space between buttons */
-  margin-top: 20px;
-  font-family: 'Baloo 2', cursive;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin: 20px 0;
 }
 
-/* Pagination Links */
 .pagination a,
 .pagination span {
   display: inline-block;
-  padding: 8px 14px;
-  border-radius: 9999px; /* pill shape */
-  border: 2px solid #f9a8d4;
-  background: white;
-  color: #db2777;
-  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid #6d28d9;
+  background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+  color: #1f1233;
   text-decoration: none;
-  transition: all 0.2s ease-in-out;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
-/* Hover */
 .pagination a:hover {
-  background: linear-gradient(135deg, #f9a8d4, #f0abfc);
-  color: white;
-  transform: scale(1.1);
-  box-shadow: 0 0 12px #f9a8d4;
+  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+  transform: scale(1.05);
 }
 
-/* Active Page */
 .pagination .active {
-  background: linear-gradient(135deg, #ec4899, #d946ef);
-  color: white;
-  border-color: #ec4899;
-  box-shadow: 0 0 10px #f472b6;
-}
-
-/* Disabled (for prev/next) */
-.pagination .disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background: linear-gradient(135deg, #93c5fd, #3b82f6);
+  border-color: #1e3a8a;
+  color: #fff;
 }

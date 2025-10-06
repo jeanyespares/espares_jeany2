@@ -1,3 +1,7 @@
+<?php
+defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,35 +17,9 @@
     body { font-family: 'IM Fell English', serif; background-color: #f3e8ff; }
     .font-title { font-family: 'Cinzel Decorative', cursive; letter-spacing: 2px; }
     .btn-hover:hover { box-shadow: 0 0 12px #c084fc, 0 0 24px #6d28d9; transform: scale(1.05); }
-    .logout-btn { 
-      background-color: #7e22ce; 
-      color: #fff; 
-      padding: 8px 16px; 
-      border-radius: 8px; 
-      display: inline-flex; 
-      align-items: center; 
-      gap: 8px; 
-      transition: 0.3s; 
-    }
-    .logout-btn:hover { background-color: #6b21a8; }
-    .hp-page { 
-      padding: 6px 12px; 
-      border: 1px solid #a855f7; 
-      border-radius: 6px; 
-      color: #6b21a8; 
-      transition: 0.3s;
-    }
-    .hp-page:hover { background-color: #e9d5ff; }
-    .hp-current { 
-      padding: 6px 12px; 
-      border-radius: 6px; 
-      background: #a855f7; 
-      color: #fff; 
-      font-weight: bold; 
-    }
   </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen text-[#3a2c56]">
 
   <!-- Header -->
   <nav class="bg-gradient-to-r from-purple-900 via-purple-700 to-purple-800 shadow-lg border-b-4 border-purple-400">
@@ -60,23 +38,19 @@
       <div class="flex justify-between items-center mb-6">
         
         <!-- Search Bar -->
-        <form method="get" action="<?=site_url('/users')?>" class="mb-4 flex justify-end">
+        <form method="get" action="<?=site_url('/auth/dashboard')?>" class="mb-4 flex justify-end">
           <input 
             type="text" 
             name="q" 
             value="<?=html_escape($_GET['q'] ?? '')?>" 
             placeholder="Search student..." 
-            class="px-4 py-2 border border-purple-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-64">
+            class="px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-64">
           <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-r-lg shadow transition-all duration-300">
             <i class="fa fa-search"></i>
           </button>
         </form>
 
-        <!-- Add Button -->
-        <a href="<?=site_url('users/create')?>"
-           class="btn-hover inline-flex items-center gap-2 bg-gradient-to-r from-purple-700 to-purple-500 text-white font-bold px-5 py-2 rounded-lg shadow-md transition-all duration-300">
-          <i class="fa-solid fa-user-plus"></i> Add New 
-        </a>
+        <!-- ✅ No Add New button here for users -->
       </div>
 
       <!-- Table -->
@@ -88,7 +62,7 @@
               <th class="py-3 px-4">Lastname</th>
               <th class="py-3 px-4">Firstname</th>
               <th class="py-3 px-4">Email</th>
-              <th class="py-3 px-4">Action</th>
+              <!-- ✅ No Action column -->
             </tr>
           </thead>
           <tbody class="text-gray-900 text-sm" style="font-family:'IM Fell English', serif;">
@@ -99,28 +73,19 @@
                   <td class="py-3 px-4"><?=($user['last_name']);?></td>
                   <td class="py-3 px-4"><?=($user['first_name']);?></td>
                   <td class="py-3 px-4"><?=($user['email']);?></td>
-                  <td class="py-3 px-4 flex justify-center gap-3">
-                    <a href="<?=site_url('users/update/'.$user['id']);?>"
-                       class="btn-hover bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg shadow flex items-center gap-1">
-                      <i class="fa-solid fa-pen-to-square"></i> Update
-                    </a>
-                    <a href="<?=site_url('users/delete/'.$user['id']);?>"
-                       class="btn-hover bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg shadow flex items-center gap-1">
-                      <i class="fa-solid fa-trash"></i> Delete
-                    </a>
-                  </td>
+                  <!-- ✅ No Update/Delete buttons -->
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
-              <tr><td colspan="5" class="py-4 text-gray-600">No students found.</td></tr>
+              <tr><td colspan="4" class="py-4 text-gray-600">No students found.</td></tr>
             <?php endif; ?>
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination + Logout -->
+      <!-- Pagination -->
       <div class="mt-4 flex justify-between items-center">
-        <!-- Pagination -->
+        <!-- Pagination left -->
         <div class="pagination flex space-x-2">
           <?php
             if (!empty($page)) {
@@ -138,8 +103,9 @@
         </div>
 
         <!-- Logout Button -->
-        <a href="<?=site_url('auth/logout');?>" class="logout-btn">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        <a href="<?=site_url('auth/logout');?>"
+           class="btn-hover bg-purple-700 hover:bg-purple-900 text-purple-100 px-4 py-2 rounded-lg shadow flex items-center gap-2">
+           <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
       </div>
 

@@ -4,10 +4,11 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 class Usersmodel extends Model {
     protected $table = 'students';
     protected $primary_key = 'id';
-    protected $allowed_fields = ['fname', 'lname', 'email'];
+    protected $allowed_fields = ['last_name', 'first_name', 'email'];
     protected $validation_rules = [
-        'lname' => 'required|min_length[2]|max_length[100]',
-        'fname' => 'required|min_length[2]|max_length[100]',
+        
+        'last_name' => 'required|min_length[2]|max_length[100]',
+        'first_name' => 'required|min_length[2]|max_length[100]',
         'email' => 'required|valid_email|max_length[150]'
     ];
 
@@ -19,6 +20,7 @@ class Usersmodel extends Model {
     public function page($q = '', $records_per_page = null, $page = null)
     {
         if (is_null($page)) {
+            // return all without pagination
             return [
                 'total_rows' => $this->db->table($this->table)->count_all(),
                 'records'    => $this->db->table($this->table)->get_all()
@@ -27,11 +29,15 @@ class Usersmodel extends Model {
             $query = $this->db->table($this->table);
 
             if (!empty($q)) {
-                $query->where("id LIKE '%{$q}%' 
-                            OR fname LIKE '%{$q}%' 
-                            OR lname LIKE '%{$q}%' 
-                            OR email LIKE '%{$q}%'");
+                $q = trim($q);
+                $query->like('id', $q)
+                    ->or_like('last_name', $q)
+                    ->or_like('first_name', $q)
+                    ->or_like('email', $q);
             }
+
+
+
 
             // count total rows
             $countQuery = clone $query;

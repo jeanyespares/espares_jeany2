@@ -1,62 +1,38 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Update Student</title>
+  <title>Update</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Pacifico&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Baloo 2', cursive;
-      background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe);
-    }
-    .font-title {
-      font-family: 'Pacifico', cursive;
-    }
-    .btn-hover:hover {
-      transform: scale(1.07) rotate(-1deg);
-      box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff;
-    }
-  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center">
+<body class="bg-gradient-to-br from-purple-100 via-purple-200 to-purple-300 min-h-screen flex items-center justify-center font-sans text-purple-900">
 
-  <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md border-4 border-pink-200">
+  <div class="bg-white/70 backdrop-blur-xl p-8 rounded-2xl shadow-2xl w-full max-w-md animate-fadeIn border border-purple-200">
+    <h2 class="text-2xl font-semibold text-center text-purple-900 mb-6">Update Now...</h2>
 
-    <!-- Header -->
-    <div class="flex flex-col items-center mb-6">
-      <div class="bg-gradient-to-br from-fuchsia-500 to-pink-400 rounded-full p-5 shadow-md animate-pulse">
-        <i class="fa-solid fa-wand-magic-sparkles text-white text-4xl"></i>
-      </div>
-      <h2 class="font-title text-3xl text-pink-600 mt-3 drop-shadow-lg">Update Information ✨</h2>
-      <p class="text-sm text-fuchsia-600 mt-1">Your Gateway to Student Success 🌸</p>
-    </div>
-
-    <!-- Form -->
-    <form action="<?=site_url('users/update/'.$user['id'])?>" method="POST" class="space-y-5">
+    <form action="<?=site_url('users/update/'.$user['id'])?>" method="POST" class="space-y-4">
       <div>
-        <label class="block text-pink-700 mb-1 font-bold">First Name</label>
-        <input type="text" name="fname" value="<?= html_escape($user['fname'])?>" required
-               class="w-full px-4 py-3 border-2 border-pink-300 rounded-xl focus:ring-4 focus:ring-pink-400 shadow-sm placeholder:text-pink-400 placeholder:italic">
+        <label class="block text-purple-800 mb-1">First Name</label>
+        <input type="text" name="first_name" value="<?= html_escape($user['first_name'])?>" required
+               class="w-full px-4 py-3 bg-purple-50 text-purple-900 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none">
       </div>
 
       <div>
-        <label class="block text-pink-700 mb-1 font-bold">Last Name</label>
-        <input type="text" name="lname" value="<?= html_escape($user['lname'])?>" required
-               class="w-full px-4 py-3 border-2 border-pink-300 rounded-xl focus:ring-4 focus:ring-pink-400 shadow-sm placeholder:text-pink-400 placeholder:italic">
+        <label class="block text-purple-800 mb-1">Last Name</label>
+        <input type="text" name="last_name" value="<?= html_escape($user['last_name'])?>" required
+               class="w-full px-4 py-3 bg-purple-50 text-purple-900 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none">
       </div>
 
       <div>
-        <label class="block text-pink-700 mb-1 font-bold">Email</label>
+        <label class="block text-purple-800 mb-1">Email Address</label>
         <input type="email" name="email" value="<?= html_escape($user['email'])?>" required
-               class="w-full px-4 py-3 border-2 border-pink-300 rounded-xl focus:ring-4 focus:ring-pink-400 shadow-sm placeholder:text-pink-400 placeholder:italic">
+               class="w-full px-4 py-3 bg-purple-50 text-purple-900 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none">
       </div>
 
       <button type="submit"
-              class="btn-hover w-full bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white font-bold py-3 rounded-xl shadow-xl transition transform hover:scale-105">
-         <i class="fa-solid fa-wand-sparkles"></i> Update
+              class="w-full bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700 text-white font-medium py-3 rounded-xl shadow-md transition duration-200">
+        Update
       </button>
     </form>
   </div>
