@@ -3,16 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Directory</title>
+  <title>BSIT Student Directory</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="<?=base_url();?>/public/style.css">
 
   <style>
-    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe); }
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe); 
+    }
+
     .font-title { font-family: 'Dancing Script', cursive; }
     .btn-hover:hover { transform: scale(1.07) rotate(-1deg); box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff; }
+
     .logout-btn { 
       background: linear-gradient(90deg, #d946ef, #ec4899); 
       color: white; 
@@ -25,10 +30,29 @@
       transition: 0.3s; 
     }
     .logout-btn:hover { background: linear-gradient(90deg, #ec4899, #d946ef); transform: scale(1.05); }
-    .hp-page { padding: 6px 12px; background: #f9a8d4; border-radius: 9999px; color: white; font-weight: bold; transition: 0.3s; }
+
+    .hp-page { 
+      padding: 6px 12px; 
+      background: #f9a8d4; 
+      border-radius: 9999px; 
+      color: white; 
+      font-weight: bold; 
+      transition: 0.3s; 
+    }
     .hp-page:hover { background: #f472b6; transform: scale(1.1); }
-    .hp-current { padding: 6px 12px; background: #d946ef; border-radius: 9999px; color: white; font-weight: bold; }
-    table thead tr { background: linear-gradient(90deg, #f472b6, #ec4899, #d946ef); color: white; }
+
+    .hp-current { 
+      padding: 6px 12px; 
+      background: #d946ef; 
+      border-radius: 9999px; 
+      color: white; 
+      font-weight: bold; 
+    }
+
+    table thead tr { 
+      background: linear-gradient(90deg, #f472b6, #ec4899, #d946ef); 
+      color: white; 
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -75,8 +99,8 @@
           <thead>
             <tr class="uppercase tracking-wider text-lg">
               <th class="py-3 px-4">ID</th>
-              <th class="py-3 px-4">Lastname</th>
               <th class="py-3 px-4">Firstname</th>
+              <th class="py-3 px-4">Lastname</th>
               <th class="py-3 px-4">Email</th>
               <th class="py-3 px-4">Action</th>
             </tr>
@@ -128,7 +152,7 @@
         </div>
 
         <!-- Logout Button -->
-        <a href="<?=site_url('users/logout');?>" class="logout-btn">
+        <a href="<?=site_url('auth/logout');?>" class="logout-btn">
           <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
       </div>
