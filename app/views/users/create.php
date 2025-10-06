@@ -18,7 +18,7 @@
         <i class="fa-solid fa-user-graduate text-white text-3xl drop-shadow-lg"></i>
       </div>
       <h2 class="text-2xl font-bold text-pink-600 mt-3 font-title">Create Your Student Account</h2>
-      <p class="text-gray-500 text-sm">Join our student community today!</p>
+      <p class="text-gray-500 text-sm">Your adventure begins today!</p>
     </div>
 
     <!-- Form -->
@@ -27,14 +27,14 @@
       <!-- First Name -->
       <div>
         <label class="block text-pink-600 mb-1 font-semibold">First Name</label>
-        <input type="text" name="first_name" placeholder="Enter your first name" required
+        <input type="text" name="fname" placeholder="Enter your first name" required
                class="w-full px-4 py-3 bg-pink-50 text-gray-700 border-2 border-pink-300 rounded-2xl focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-sm transition duration-200">
       </div>
 
       <!-- Last Name -->
       <div>
         <label class="block text-pink-600 mb-1 font-semibold">Last Name</label>
-        <input type="text" name="last_name" placeholder="Enter your last name" required
+        <input type="text" name="lname" placeholder="Enter your last name" required
                class="w-full px-4 py-3 bg-pink-50 text-gray-700 border-2 border-pink-300 rounded-2xl focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-sm transition duration-200">
       </div>
 

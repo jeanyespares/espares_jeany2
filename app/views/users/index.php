@@ -37,7 +37,7 @@
   <nav class="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 shadow-lg border-b-4 border-pink-300">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <h1 class="text-white font-title text-3xl flex items-center gap-2">
-        <i class="fa-solid fa-sparkles"></i> Student Directory
+        <i class="fa-solid fa-sparkles"></i> BSIT Student Directory
       </h1>
     </div>
   </nav>

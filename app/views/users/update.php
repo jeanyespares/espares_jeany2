@@ -21,13 +21,13 @@
     <form action="<?=site_url('users/update/'.$user['id'])?>" method="POST" class="space-y-5">
       <div>
         <label class="block text-pink-600 mb-1 font-semibold">First Name</label>
-        <input type="text" name="first_name" value="<?= html_escape($user['fname'])?>" required
+        <input type="text" name="fname" value="<?= html_escape($user['fname'])?>" required
                class="w-full px-4 py-3 bg-pink-50 text-gray-700 border-2 border-pink-300 rounded-2xl focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-sm transition duration-200">
       </div>
 
       <div>
         <label class="block text-pink-600 mb-1 font-semibold">Last Name</label>
-        <input type="text" name="last_name" value="<?= html_escape($user['lname'])?>" required
+        <input type="text" name="lname" value="<?= html_escape($user['lname'])?>" required
                class="w-full px-4 py-3 bg-pink-50 text-gray-700 border-2 border-pink-300 rounded-2xl focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-sm transition duration-200">
       </div>
 
