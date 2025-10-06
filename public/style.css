@@ -183,3 +183,26 @@ h1 {
   color: #4a2b6c;
   box-shadow: 0 0 15px #f3d4ff, 0 0 30px #e3b9ff;
 }
+
+/* 🌸 Logout Button Styling (Matches BSIT Aesthetic) */
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #fbb6ce, #fcd2e3);
+  color: #782a46;
+  border: 2px solid #f1a3c0;
+  box-shadow: 0 0 10px #fcb6e1;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #ffd1e3, #ffc6dc);
+  transform: scale(1.08);
+  box-shadow: 0 0 20px #fcb6e1, 0 0 30px #f8b2d6;
+  color: #5a1f36;
+}
