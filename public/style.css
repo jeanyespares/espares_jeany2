@@ -2,31 +2,31 @@ body {
   margin: 0;
   padding: 20px;
   font-family: "Garamond", "Times New Roman", serif;
-  background: url('LavenderBackground.jpg') no-repeat center center fixed;
+  background: url('PunkVioletBackground.jpg') no-repeat center center fixed;
   background-size: cover;
   text-align: center;
-  color: #2d1b4e; /* deep violet */
+  color: #e0d7ff; /* neon violet text */
 }
 
 h1 {
   margin-top: 40px;
   margin-bottom: 20px;
   font-size: 48px;
-  color: #1f1233;
-  text-shadow: 2px 2px #c4b5fd; /* light lavender glow */
+  color: #ff3fff; /* bright neon pink-purple */
+  text-shadow: 2px 2px #8a2be2, 0 0 10px #ff3fff; /* punk glow */
 }
 
 .description-box {
-  background: rgba(240, 235, 255, 0.9);
-  border: 3px solid #b197fc;
+  background: rgba(30, 0, 50, 0.85); /* dark translucent purple */
+  border: 3px solid #ff3fff; /* neon border */
   border-radius: 16px;
   width: 60%;
   margin: 40px auto;
   padding: 20px;
-  box-shadow: 0 0 15px #6d28d9;
+  box-shadow: 0 0 25px #9b00ff, 0 0 50px #ff3fff; /* edgy neon glow */
   font-size: 18px;
   line-height: 1.6;
-  color: #2d1b4e;
+  color: #e0d7ff;
 }
 
 .buttons {
@@ -37,24 +37,26 @@ h1 {
   width: 80%;
   margin: 0 auto;
   border-collapse: collapse;
-  background: rgba(240, 235, 255, 0.9);
-  box-shadow: 0 0 15px #6d28d9;
+  background: rgba(50, 0, 60, 0.9); /* darker table background */
+  box-shadow: 0 0 20px #ff3fff, 0 0 40px #9b00ff;
 }
 
 .guild-table th,
 .guild-table td {
-  border: 2px solid #a78bfa;
+  border: 2px solid #ff3fff;
   padding: 12px;
   font-size: 18px;
+  color: #e0d7ff;
 }
 
 .guild-table th {
-  background: #a78bfa;
-  color: #f5f3ff;
+  background: #6a0dad; /* deep violet */
+  color: #ff3fff;
+  text-shadow: 0 0 5px #ff3fff;
 }
 
 .guild-table tr:nth-child(even) {
-  background: rgba(250, 245, 255, 0.8);
+  background: rgba(80, 0, 100, 0.8);
 }
 
 .btn {
@@ -62,60 +64,62 @@ h1 {
   text-decoration: none;
   padding: 10px 20px;
   margin: 5px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #c4b5fd, #a78bfa);
-  color: #1f1233;
-  border: 2px solid #6d28d9;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff3fff, #9b00ff);
+  color: #fff;
+  border: 2px solid #e000ff;
   font-weight: bold;
   transition: 0.3s;
+  box-shadow: 0 0 8px #ff3fff;
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #e000ff, #ff00ff);
+  transform: scale(1.1) rotate(-2deg);
+  box-shadow: 0 0 20px #ff3fff, 0 0 40px #9b00ff;
 }
 
 .btn.danger {
-  background: linear-gradient(135deg, #6b21a8, #4c1d95);
+  background: linear-gradient(135deg, #ff0000, #800080);
   color: #fff;
-  border-color: #2e1065;
+  border-color: #9b00ff;
+  box-shadow: 0 0 10px #ff0000;
 }
 
 .btn.create {
-  display: inline-block;
-  margin-top: 20px;
-  background: linear-gradient(135deg, #93c5fd, #3b82f6);
-  border-color: #1e3a8a;
+  background: linear-gradient(135deg, #ff00ff, #8000ff);
+  border-color: #9b00ff;
   color: #fff;
 }
 
 .form-box {
-  background: rgba(240, 235, 255, 0.95);
-  border: 3px solid #a78bfa;
+  background: rgba(30, 0, 50, 0.95);
+  border: 3px solid #ff3fff;
   border-radius: 16px;
   width: 50%;
   margin: 40px auto;
   padding: 30px;
-  box-shadow: 0 0 15px #6d28d9;
+  box-shadow: 0 0 25px #ff3fff, 0 0 50px #9b00ff;
   text-align: center;
 }
 
 .form-box label {
   font-size: 20px;
   font-weight: bold;
-  color: #1f1233;
+  color: #ff3fff;
+  text-shadow: 0 0 5px #ff3fff;
 }
 
 .form-input {
   width: 70%;
   padding: 8px;
   margin-top: 5px;
-  border: 2px solid #a78bfa;
+  border: 2px solid #ff3fff;
   border-radius: 8px;
   font-size: 16px;
   font-family: "Garamond", serif;
-  background: #f5f3ff;
-  color: #1f1233;
+  background: #2b002b;
+  color: #e0d7ff;
 }
 
 .header-row {
@@ -129,11 +133,11 @@ h1 {
 .search {
   padding: 8px 12px;
   border-radius: 8px;
-  border: 2px solid #6d28d9;
+  border: 2px solid #ff3fff;
   font-size: 16px;
   font-family: "Garamond", serif;
-  background: #f5f3ff;
-  color: #1f1233;
+  background: #2b002b;
+  color: #e0d7ff;
   height: 36px;
   box-sizing: border-box;
 }
@@ -157,21 +161,23 @@ h1 {
   display: inline-block;
   padding: 10px 20px;
   border-radius: 8px;
-  border: 2px solid #6d28d9;
-  background: linear-gradient(135deg, #c4b5fd, #a78bfa);
-  color: #1f1233;
+  border: 2px solid #ff3fff;
+  background: linear-gradient(135deg, #ff3fff, #9b00ff);
+  color: #fff;
   text-decoration: none;
   font-weight: bold;
   transition: 0.3s;
+  box-shadow: 0 0 5px #ff3fff;
 }
 
 .pagination a:hover {
-  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #e000ff, #ff00ff);
+  transform: scale(1.05) rotate(-1deg);
 }
 
 .pagination .active {
-  background: linear-gradient(135deg, #93c5fd, #3b82f6);
-  border-color: #1e3a8a;
+  background: linear-gradient(135deg, #ff00ff, #9b00ff);
+  border-color: #e000ff;
   color: #fff;
+  box-shadow: 0 0 15px #ff3fff, 0 0 30px #9b00ff;
 }
