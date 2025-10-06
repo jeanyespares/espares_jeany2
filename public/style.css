@@ -1,183 +1,79 @@
 body {
   margin: 0;
-  padding: 20px;
-  font-family: "Garamond", "Times New Roman", serif;
+  padding: 20px 40px 20px 60px; /* slight rightward shift */
+  font-family: "Poppins", "Segoe UI", sans-serif;
   background: url('PunkVioletBackground.jpg') no-repeat center center fixed;
   background-size: cover;
-  text-align: center;
-  color: #e0d7ff; /* neon violet text */
+  text-align: left;
+  color: #f0eaff; /* softer violet text */
 }
 
 h1 {
   margin-top: 40px;
   margin-bottom: 20px;
-  font-size: 48px;
-  color: #ff3fff; /* bright neon pink-purple */
-  text-shadow: 2px 2px #8a2be2, 0 0 10px #ff3fff; /* punk glow */
+  font-size: 42px;
+  color: #ff99ff; /* softened neon pink-purple */
+  text-shadow: 1px 1px #c080ff, 0 0 6px #ff99ff;
 }
 
 .description-box {
-  background: rgba(30, 0, 50, 0.85); /* dark translucent purple */
-  border: 3px solid #ff3fff; /* neon border */
+  background: rgba(60, 20, 80, 0.75);
+  border: 2px solid #ff99ff;
   border-radius: 16px;
-  width: 60%;
+  width: 65%;
   margin: 40px auto;
-  padding: 20px;
-  box-shadow: 0 0 25px #9b00ff, 0 0 50px #ff3fff; /* edgy neon glow */
-  font-size: 18px;
-  line-height: 1.6;
-  color: #e0d7ff;
-}
-
-.buttons {
-  margin-top: 30px;
+  padding: 24px;
+  box-shadow: 0 0 15px #c080ff, 0 0 30px #ff99ff;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #f0eaff;
+  text-align: left;
 }
 
 .guild-table {
-  width: 80%;
+  width: 85%;
   margin: 0 auto;
   border-collapse: collapse;
-  background: rgba(50, 0, 60, 0.9); /* darker table background */
-  box-shadow: 0 0 20px #ff3fff, 0 0 40px #9b00ff;
+  background: rgba(70, 20, 90, 0.85);
+  box-shadow: 0 0 15px #ff99ff, 0 0 30px #c080ff;
 }
 
 .guild-table th,
 .guild-table td {
-  border: 2px solid #ff3fff;
-  padding: 12px;
-  font-size: 18px;
-  color: #e0d7ff;
+  border: 1px solid #ff99ff;
+  padding: 10px;
+  font-size: 16px;
+  color: #f0eaff;
 }
 
 .guild-table th {
-  background: #6a0dad; /* deep violet */
-  color: #ff3fff;
-  text-shadow: 0 0 5px #ff3fff;
+  background: #a060ff;
+  color: #ffccff;
+  text-shadow: 0 0 3px #ff99ff;
 }
 
 .guild-table tr:nth-child(even) {
-  background: rgba(80, 0, 100, 0.8);
+  background: rgba(100, 40, 120, 0.7);
 }
 
 .btn {
-  display: inline-block;
-  text-decoration: none;
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ff3fff, #9b00ff);
-  color: #fff;
-  border: 2px solid #e000ff;
-  font-weight: bold;
-  transition: 0.3s;
-  box-shadow: 0 0 8px #ff3fff;
+  background: linear-gradient(135deg, #ff99ff, #c080ff);
+  border: 1px solid #e0aaff;
+  box-shadow: 0 0 6px #ff99ff;
+  font-size: 16px;
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, #e000ff, #ff00ff);
-  transform: scale(1.1) rotate(-2deg);
-  box-shadow: 0 0 20px #ff3fff, 0 0 40px #9b00ff;
-}
-
-.btn.danger {
-  background: linear-gradient(135deg, #ff0000, #800080);
-  color: #fff;
-  border-color: #9b00ff;
-  box-shadow: 0 0 10px #ff0000;
-}
-
-.btn.create {
-  background: linear-gradient(135deg, #ff00ff, #8000ff);
-  border-color: #9b00ff;
-  color: #fff;
-}
-
-.form-box {
-  background: rgba(30, 0, 50, 0.95);
-  border: 3px solid #ff3fff;
-  border-radius: 16px;
-  width: 50%;
-  margin: 40px auto;
-  padding: 30px;
-  box-shadow: 0 0 25px #ff3fff, 0 0 50px #9b00ff;
-  text-align: center;
-}
-
-.form-box label {
-  font-size: 20px;
-  font-weight: bold;
-  color: #ff3fff;
-  text-shadow: 0 0 5px #ff3fff;
-}
-
-.form-input {
-  width: 70%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 2px solid #ff3fff;
-  border-radius: 8px;
-  font-size: 16px;
-  font-family: "Garamond", serif;
-  background: #2b002b;
-  color: #e0d7ff;
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 80%;
-  margin: 0 auto 20px auto;
-}
-
-.search {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 2px solid #ff3fff;
-  font-size: 16px;
-  font-family: "Garamond", serif;
-  background: #2b002b;
-  color: #e0d7ff;
-  height: 36px;
-  box-sizing: border-box;
-}
-
-.header-row .btn {
-  height: 36px;
-  margin-left: 5px;
-  padding: 8px 16px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  flex-wrap: nowrap;
-  gap: 8px;
-  margin: 20px 0;
-}
-
-.pagination a,
-.pagination span {
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 2px solid #ff3fff;
-  background: linear-gradient(135deg, #ff3fff, #9b00ff);
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
-  transition: 0.3s;
-  box-shadow: 0 0 5px #ff3fff;
-}
-
-.pagination a:hover {
-  background: linear-gradient(135deg, #e000ff, #ff00ff);
+  background: linear-gradient(135deg, #e0aaff, #ffccff);
   transform: scale(1.05) rotate(-1deg);
+  box-shadow: 0 0 15px #ff99ff, 0 0 25px #c080ff;
 }
 
-.pagination .active {
-  background: linear-gradient(135deg, #ff00ff, #9b00ff);
-  border-color: #e000ff;
-  color: #fff;
-  box-shadow: 0 0 15px #ff3fff, 0 0 30px #9b00ff;
+.form-box,
+.form-input,
+.search {
+  font-family: "Poppins", sans-serif;
+  color: #f0eaff;
+  background: rgba(60, 20, 80, 0.9);
+  border-color: #ff99ff;
 }
