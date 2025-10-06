@@ -1,208 +1,194 @@
+/* 🌸 General Layout */
 body {
   margin: 0;
-  padding: 20px;
-  font-family: "Poppins", "Garamond", serif;
-  background: linear-gradient(135deg, #fbefff, #f8e8ff, #fce7f3, #e8e0ff);
-  background-attachment: fixed;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f3e8ff, #fde6ff, #fdf3ff);
+  color: #4a2b6c;
   text-align: center;
-  color: #5c3c7a;
+  min-height: 100vh;
 }
 
-h1 {
-  margin-top: 40px;
-  margin-bottom: 20px;
-  font-size: 48px;
-  color: #b56ce2;
-  text-shadow: 1px 1px 6px #f3c9ff, 0 0 10px #e3a7ff;
+/* 🌸 Header */
+header {
+  background: linear-gradient(135deg, #e3b8ff, #c8a2ff);
+  color: white;
+  padding: 20px 0;
+  box-shadow: 0 4px 10px rgba(150, 90, 200, 0.2);
+  border-bottom: 3px solid #d8b4ff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
+header h1 {
+  font-size: 40px;
+  margin: 0;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+header p {
+  font-size: 16px;
+  margin: 5px 0 0;
+  color: #f9f9ff;
+}
+
+/* 🌸 Logout Button */
+.logout-btn {
+  position: absolute;
+  top: 18px;
+  right: 30px;
+  background: linear-gradient(135deg, #fbb6ce, #fcd2e3);
+  color: #5a1f36;
+  border: 2px solid #f1a3c0;
+  border-radius: 10px;
+  padding: 8px 16px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 0 10px #fcb6e1;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #ffd6eb, #fcb7da);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #fcb6e1, 0 0 30px #f8b2d6;
+}
+
+/* 🌸 Description Section */
 .description-box {
-  background: rgba(255, 255, 255, 0.7);
-  border: 3px solid #d4a5ff;
+  background: rgba(255, 255, 255, 0.8);
+  border: 3px solid #d8b4ff;
   border-radius: 16px;
-  width: 60%;
+  width: 70%;
   margin: 40px auto;
-  padding: 20px;
-  box-shadow: 0 0 20px #e3b9ff, 0 0 40px #f7e2ff;
+  padding: 25px;
+  box-shadow: 0 0 25px #e8baff, 0 0 50px #f3d4ff;
   font-size: 18px;
   line-height: 1.6;
   color: #5a3976;
 }
 
-.buttons {
-  margin-top: 30px;
-}
-
+/* 🌸 Table Container */
 .guild-table {
-  width: 80%;
-  margin: 0 auto;
+  width: 85%;
+  margin: 30px auto;
   border-collapse: collapse;
-  background: rgba(255, 255, 255, 0.75);
-  box-shadow: 0 0 25px #f3d4ff, 0 0 50px #e8baff;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
   overflow: hidden;
-}
-
-.guild-table th,
-.guild-table td {
-  border: 1.5px solid #d4a5ff;
-  padding: 12px;
-  font-size: 18px;
-  color: #4a2b6c;
+  box-shadow: 0 0 30px rgba(200, 160, 255, 0.3);
 }
 
 .guild-table th {
-  background: linear-gradient(135deg, #e9ceff, #d6b0ff);
-  color: #6b21a8;
-  text-shadow: 0 0 4px #f3c9ff;
+  background: linear-gradient(135deg, #d8b4ff, #e6c6ff);
+  color: #4a2566;
+  padding: 14px;
+  font-size: 18px;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.guild-table td {
+  padding: 12px;
+  border-bottom: 1.5px solid #e6ccff;
+  font-size: 17px;
 }
 
 .guild-table tr:nth-child(even) {
   background: rgba(246, 232, 255, 0.9);
 }
 
+.guild-table tr:hover {
+  background: rgba(240, 210, 255, 0.9);
+  transform: scale(1.01);
+  transition: all 0.2s ease;
+}
+
+/* 🌸 Buttons */
 .btn {
   display: inline-block;
   text-decoration: none;
   padding: 10px 20px;
-  margin: 5px;
+  margin: 6px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #e0b3ff, #f3c9ff);
+  border: 2px solid #c8a2ff;
+  background: linear-gradient(135deg, #e6b6ff, #f7d6ff);
   color: #4a2b6c;
-  border: 2px solid #d8aaff;
   font-weight: 600;
-  transition: 0.3s;
-  box-shadow: 0 0 8px #f3d4ff;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px #edd2ff;
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, #f4d8ff, #e3b8ff);
-  transform: scale(1.08);
-  box-shadow: 0 0 20px #f3d4ff, 0 0 30px #d8aaff;
+  background: linear-gradient(135deg, #f0d4ff, #e3b8ff);
+  transform: scale(1.07);
+  box-shadow: 0 0 20px #e0baff;
 }
 
 .btn.danger {
   background: linear-gradient(135deg, #fbb6ce, #fcd2e3);
   color: #782a46;
   border-color: #f1a3c0;
-  box-shadow: 0 0 10px #fcb6e1;
 }
 
 .btn.create {
-  background: linear-gradient(135deg, #e6b6ff, #fcd2ff);
-  border-color: #d8aaff;
-  color: #4a2b6c;
+  background: linear-gradient(135deg, #cdb2ff, #e7ccff);
+  border-color: #b693ff;
+  color: #3f2060;
 }
 
-.form-box {
-  background: rgba(255, 255, 255, 0.8);
-  border: 3px solid #d4a5ff;
-  border-radius: 16px;
-  width: 50%;
-  margin: 40px auto;
-  padding: 30px;
-  box-shadow: 0 0 25px #f3d4ff, 0 0 40px #e8baff;
-  text-align: center;
-}
-
-.form-box label {
-  font-size: 20px;
-  font-weight: bold;
-  color: #8b5ecf;
-  text-shadow: 0 0 6px #e9ceff;
-}
-
-.form-input {
-  width: 70%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 2px solid #d4a5ff;
-  border-radius: 8px;
-  font-size: 16px;
-  font-family: "Poppins", serif;
-  background: #f9f5ff;
-  color: #4a2b6c;
-}
-
+/* 🌸 Search Bar & Header Row */
 .header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 80%;
-  margin: 0 auto 20px auto;
+  width: 85%;
+  margin: 30px auto 15px auto;
+  flex-wrap: wrap;
 }
 
 .search {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 2px solid #d4a5ff;
-  font-size: 16px;
-  font-family: "Poppins", serif;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 2px solid #c8a2ff;
   background: #f9f5ff;
   color: #4a2b6c;
-  height: 36px;
-  box-sizing: border-box;
+  font-size: 16px;
+  width: 250px;
+  box-shadow: 0 0 10px rgba(220, 180, 255, 0.3);
 }
 
-.header-row .btn {
-  height: 36px;
-  margin-left: 5px;
-  padding: 8px 16px;
-}
-
+/* 🌸 Pagination */
 .pagination {
   display: flex;
   justify-content: center;
-  flex-wrap: nowrap;
-  gap: 8px;
-  margin: 20px 0;
+  gap: 10px;
+  margin: 25px 0;
 }
 
 .pagination a,
 .pagination span {
   display: inline-block;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 2px solid #d4a5ff;
-  background: linear-gradient(135deg, #f4d8ff, #e8baff);
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 2px solid #c8a2ff;
+  background: linear-gradient(135deg, #f7e6ff, #ebd2ff);
   color: #4a2b6c;
   text-decoration: none;
-  font-weight: bold;
-  transition: 0.3s;
-  box-shadow: 0 0 5px #f3d4ff;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px #edd2ff;
 }
 
 .pagination a:hover {
-  background: linear-gradient(135deg, #fdf0ff, #f5dbff);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #fdf0ff, #e6ccff);
+  transform: scale(1.07);
 }
 
 .pagination .active {
-  background: linear-gradient(135deg, #e6b6ff, #d4a5ff);
-  border-color: #cfa8ff;
-  color: #4a2b6c;
-  box-shadow: 0 0 15px #f3d4ff, 0 0 30px #e3b9ff;
-}
-
-/* 🌸 Logout Button Styling (Matches BSIT Aesthetic) */
-.logout-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  padding: 10px 18px;
-  border-radius: 12px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #fbb6ce, #fcd2e3);
-  color: #782a46;
-  border: 2px solid #f1a3c0;
-  box-shadow: 0 0 10px #fcb6e1;
-  transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-  background: linear-gradient(135deg, #ffd1e3, #ffc6dc);
-  transform: scale(1.08);
-  box-shadow: 0 0 20px #fcb6e1, 0 0 30px #f8b2d6;
-  color: #5a1f36;
+  background: linear-gradient(135deg, #dcb9ff, #c7a2ff);
+  border-color: #b88aff;
+  color: #fff;
+  box-shadow: 0 0 20px #e3b9ff;
 }
