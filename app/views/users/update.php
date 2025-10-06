@@ -14,13 +14,13 @@
     <form action="<?=site_url('users/update/'.$user['id'])?>" method="POST" class="space-y-4">
       <div>
         <label class="block text-purple-800 mb-1">First Name</label>
-        <input type="text" name="first_name" value="<?= html_escape($user['first_name'])?>" required
+        <input type="text" name="first_name" value="<?= html_escape($user['fname'])?>" required
                class="w-full px-4 py-3 bg-purple-50 text-purple-900 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none">
       </div>
 
       <div>
         <label class="block text-purple-800 mb-1">Last Name</label>
-        <input type="text" name="last_name" value="<?= html_escape($user['last_name'])?>" required
+        <input type="text" name="last_name" value="<?= html_escape($user['lname'])?>" required
                class="w-full px-4 py-3 bg-purple-50 text-purple-900 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none">
       </div>
 
