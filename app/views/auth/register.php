@@ -12,17 +12,9 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe);
-    }
-    .font-title {
-        font-family: 'Dancing Script', cursive;
-    }
-    .btn-hover:hover {
-        transform: scale(1.07) rotate(-1deg);
-        box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff;
-    }
+    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #ffe4e6, #fce7f3, #ede9fe, #dbeafe); }
+    .font-title { font-family: 'Dancing Script', cursive; }
+    .btn-hover:hover { transform: scale(1.07) rotate(-1deg); box-shadow: 0 0 15px #ff99cc, 0 0 25px #ffccff; }
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center">
@@ -37,28 +29,20 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
         <input type="password" name="password" placeholder="Password" required
                class="w-full px-4 py-3 bg-pink-50 text-gray-700 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200">
         
-        <select name="role"
+        <select name="role" 
                 class="w-full px-4 py-3 bg-pink-50 text-gray-700 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200">
             <option value="user">User</option>
-            <?php if (!$admin_exists): ?>
-                <option value="admin">Admin</option>
-            <?php endif; ?>
+            <option value="admin">Admin</option>
         </select>
-
-        <?php if ($admin_exists): ?>
-            <p class="text-sm text-gray-500 italic text-center">
-                Admin account already exists. You can only register as a user.
-            </p>
-        <?php endif; ?>
         
-        <button type="submit"
+        <button type="submit" 
                 class="w-full py-3 bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 hover:from-pink-500 hover:via-fuchsia-600 hover:to-purple-600 text-white font-bold rounded-2xl shadow-lg transition duration-300 transform hover:scale-105 flex justify-center items-center gap-2">
             <i class="fa-solid fa-user-plus"></i> Register
         </button>
     </form>
     
     <p class="text-center text-gray-600 mt-4">
-        Already have an account?
+        Already have an account? 
         <a href="<?= site_url('auth/login') ?>" class="text-pink-600 font-semibold hover:underline">Login</a>
     </p>
 </div>
