@@ -58,13 +58,13 @@ class UsersController extends Controller {
 
 
         if ($this->io->method() == 'post') {
-            $firstname= $this->io->post('first_name');
-            $lastname= $this->io->post('last_name');
+            $firstname= $this->io->post('fname');
+            $lastname= $this->io->post('lname');
             $email= $this->io->post('email');
 
             $data = array(
-                'first_name' => $firstname,
-                'last_name' => $lastname,
+                'fname' => $firstname,
+                'lname' => $lastname,
                 'email' => $email
             );
 
@@ -93,13 +93,13 @@ class UsersController extends Controller {
         }
 
         if ($this->io->method() == 'post') {
-            $firstname= $this->io->post('first_name');
-            $lastname= $this->io->post('last_name');
+            $firstname= $this->io->post('fname');
+            $lastname= $this->io->post('lname');
             $email= $this->io->post('email');
 
             $data = array(
-                'first_name' => $firstname,
-                'last_name' => $lastname,
+                'fname' => $firstname,
+                'lname' => $lastname,
                 'email' => $email
             );
 

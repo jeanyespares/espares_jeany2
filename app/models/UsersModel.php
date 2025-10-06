@@ -7,8 +7,8 @@ class Usersmodel extends Model {
     protected $allowed_fields = ['last_name', 'first_name', 'email'];
     protected $validation_rules = [
         
-        'last_name' => 'required|min_length[2]|max_length[100]',
-        'first_name' => 'required|min_length[2]|max_length[100]',
+        'lname' => 'required|min_length[2]|max_length[100]',
+        'fname' => 'required|min_length[2]|max_length[100]',
         'email' => 'required|valid_email|max_length[150]'
     ];
 
@@ -31,8 +31,8 @@ class Usersmodel extends Model {
             if (!empty($q)) {
                 $q = trim($q);
                 $query->like('id', $q)
-                    ->or_like('last_name', $q)
-                    ->or_like('first_name', $q)
+                    ->or_like('lname', $q)
+                    ->or_like('fname', $q)
                     ->or_like('email', $q);
             }
 
